@@ -1,0 +1,16 @@
+# Local credentials, runtime data and generated build products are not source.
+.update-signing/
+.env
+.env.*
+build/
+*.o
+*.d
+*.elf
+*.dol
+*.map
+*.log
+smPlayerSettings.xml
+_backups/
+_github-backup/
+_source_public/
+Temp/

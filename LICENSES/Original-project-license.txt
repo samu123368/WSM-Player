@@ -1,0 +1,4 @@
+Original author supplied project metadata at commit 9b15635763e9f0929f905e5d3a50663fcc46e336
+https://github.com/giantpune/wii-system-menu-player/blob/9b15635763e9f0929f905e5d3a50663fcc46e336/wiibrew_page.txt
+Relevant field: | licence = GPL
+The original renderer/per-file notices are retained separately.
