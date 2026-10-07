@@ -256,7 +256,7 @@ source/utils/updateformat.h,821,11d1f89461d259f9e0d456fc7ce165eb3e546e8092a768e3
 source/video.cpp,16514,ac89b8561fbcad91b14e46ad838e7c2c1d0202067c9cb9c54f12e0d210bf84c7,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/video.h,1013,5b70b8ffc628760d19cf64bd81e1c71b3df2b75a32ee894541161b95432a7377,Manual provenance review; no recognized notice in file
 source/wsmversion.h,370,6793e6ff99ccd03b671f3a6fbfb6c2a05c48df5ce247051ede83b3bf0c9645b5,Manual provenance review; no recognized notice in file
-README.md,2817,ec7ae350f23f827ae0ee9167ea081c2ff830cbb052370d539bb6faebbb345992,GPL-v2 notice; combined-distribution review required
+README.md,3643,0c657c5307b6d72fd8b7ca54683bea7a85fde8acdb5b6f3e5f560524ee429c64,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file
 LICENSES/OFL-Noto-CJK.txt,4301,6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2,Manual provenance review; no recognized notice in file

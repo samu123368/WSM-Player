@@ -15,7 +15,21 @@ history, personal configuration, logs or signing secrets are included.
 See [REVIEW.md](REVIEW.md), [provenance](LICENSES/PROVENANCE.md) and the SHA-256
 inventory. PREPARATION.json records copy-time checks, not hardware certification.
 
-## Build
+## Download and install — no compiling needed
+
+**[Download WSM Player for Wii](https://github.com/samu123368/WSM-Player/releases/latest/download/WSM-Player.zip)**
+
+1. Extract the ZIP onto the root of your SD card, keeping the `apps/wsmplayer` folder.
+2. Insert the SD card into your Wii and open the Homebrew Channel.
+3. Select **WSM Player** and press **Load**.
+
+The ZIP includes `boot.dol`, `meta.xml`, the app icon and license notices.
+No extra image pack is needed: Wii UI resources come from your console's NAND.
+You do **not** need the source ZIP, devkitPro, an IOS installer or a WAD installer.
+Existing personal settings are not bundled or removed. You can also browse
+[all prebuilt releases](https://github.com/samu123368/WSM-Player/releases).
+
+## Build from source — optional, for developers
 
 Install devkitPro's devkitPPC and Wii development libraries. The Makefile links
 libogc, libfat, ASND, wiikeyboard, wiiuse, bte and the Wii portlibs providing
@@ -37,7 +51,7 @@ legacy PowerPC implementation on 2,912 synthetic cases; see REVIEW.md.
 
 ## Download and updates
 
-SD-ready builds and the signed update feed are maintained separately in
+SD-ready builds are available in this repository's Releases. The signed update feed is maintained in
 [WSM-Player-Updates](https://github.com/samu123368/WSM-Player-Updates).
 Application updates replace the DOL only; they do not install IOS or WADs.
 The public verification key is included; the private signing seed is not.
