@@ -79,6 +79,13 @@ public:
 	}
 
 	void SetForcedTexture( Texture *t ){ forcedTexture = t; }
+	// Playback correction for a specific material, not the object's timeline.
+	// Applied to sampled values so revisiting/rebinding cannot compound it.
+	void SetTextureTranslationScale(float x, float y)
+	{
+		textureTranslationScale[0] = x;
+		textureTranslationScale[1] = y;
+	}
 
 protected:
 	void ProcessHermiteKey(const KeyType& type, float value);
@@ -280,6 +287,7 @@ private:
 	// added to stick textures to a pane that are not part of the layout
 	//! used for the save stuff where the layout contains a dummy texture as a place holder
 	Texture *forcedTexture;
+	float textureTranslationScale[2];
 };
 
 class MaterialList : public std::vector<Material*>

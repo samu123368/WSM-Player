@@ -42,6 +42,7 @@ Material::Material()
 	, header(0)
 	, forcedTexture( NULL )
 {
+	textureTranslationScale[0] = textureTranslationScale[1] = 1.0f;
 	for( int i = 0; i < 8; i++ )
 		palette_texture[i] = DEFAULT_PALETTE;
 }
@@ -596,6 +597,8 @@ void Material::ProcessHermiteKey(const KeyType& type, float value)
 	{
 		if (type.target < 5 && type.index < flags->texture_srt)
 		{
+			if (type.target < 2)
+				value *= textureTranslationScale[type.target];
 			(&texture_srts[type.index].translate_x)[type.target] = value;
 			return;
 		}

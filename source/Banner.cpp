@@ -2290,6 +2290,27 @@ bool Banner::Load( const u8 *data, u32 len )
 	return true;
 }
 
+static void ConfigureEverybodyVotesBackground(Layout *layout, const U8Archive &archive)
+{
+	// The native banner has a separate, repeating 8x8 stripe texture. Slow
+	// only its scroll; the hands, bubbles, logo and Start/Loop timing stay native.
+	// Use the layout + texture signature for NAND, WAD and standalone banners.
+	if (!layout || !layout->FindPane("N_hand_00")
+		|| !layout->FindPane("P_hand_00")
+		|| !archive.GetFileExact("/arc/timg/sk_CBgLine_00.tpl"))
+		return;
+	Material *background = layout->FindMaterial("Picture_00");
+	Texture *stripes = layout->FindTexture("sk_CBgLine_00.tpl");
+	if (!background || !stripes || background->GetTextureMapCount() != 1)
+		return;
+	const TextureList &textures = layout->Textures();
+	const u16 index = background->GetTextureIndex();
+	if (index >= textures.size() || textures[index] != stripes)
+		return;
+	// Both authored loops end on whole texture repeats after this correction.
+	background->SetTextureTranslationScale(1.0f, 1.0f / 8.0f);
+}
+
 Object *Banner::LoadBanner()
 {
 	if(!arc)
@@ -2323,6 +2344,7 @@ Object *Banner::LoadBanner()
 	{
 		return NULL;
 	}
+	ConfigureEverybodyVotesBackground(layout_banner, theArc);
 	const bool forecastBannerLayout = IsForecastTitle( titleId )
 		|| IsForecastLayout( layout_banner );
 	const bool newsBannerLayout = IsNewsTitle( titleId )
