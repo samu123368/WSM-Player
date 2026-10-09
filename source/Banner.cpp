@@ -2630,11 +2630,13 @@ static u8 BannerInformationAlpha(u32 frames, u32 delay, u32 fadeFrames)
 
 static float NewsTickerPosition(u32 frames, u32 delay, float lastPointRight)
 {
-	if (frames <= delay) return 0.0f;
-	// Keep the native two-pixel scroll. As soon as the final point leaves the
-	// 608-pixel banner, show the first column again -- no empty exit/intro tail.
-	const u32 cycle = (u32)std::max(1.0f, ceilf((lastPointRight + 304.0f) / 2.0f));
-	return -2.0f * (float)((frames - delay) % cycle);
+	const float entry = 304.0f;
+	if (frames <= delay) return entry;
+	// Native two-pixel scroll; rewind only while both ends are off screen.
+	// Resetting to x=0 made the first headline suddenly appear in the middle.
+	const u32 cycle = (u32)std::max(1.0f,
+		ceilf((entry + lastPointRight + 304.0f) / 2.0f)) + 1;
+	return entry - 2.0f * (float)((frames - delay) % cycle);
 }
 
 void Banner::ApplyGeneratedChannelText()
@@ -2800,7 +2802,7 @@ void Banner::ApplyGeneratedChannelText()
 		Pane *information = layout_banner->FindPane("all");
 		if (information)
 			information->SetAlpha(BannerInformationAlpha(bannerInfoFrames,
-				bannerInfoDelayFrames, 16));
+				bannerInfoDelayFrames / 4, 16));
 	}
 	else
 	{
@@ -2859,6 +2861,13 @@ void Banner::ApplyGeneratedChannelText()
 			}
 		}
 		newsBannerExtentRevision = revision;
+		// BRLAN visibility/alpha is not an opening gate: cached/native poses can
+		// expose a headline during the zoom. Hide the complete data tree explicitly
+		// until its post-open delay ends. Belts stay visible on subsequent wraps.
+		const bool showHeadlines = headlineCount > 0
+			&& bannerInfoFrames > bannerInfoDelayFrames;
+		SetNamedPaneVisible(layout_banner, "news", showHeadlines);
+		SetNamedPaneVisible(layout_banner, "line", showHeadlines);
 		Pane *news = layout_banner->FindPane("news");
 		Pane *line = layout_banner->FindPane("line");
 		if (news)

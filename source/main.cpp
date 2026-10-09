@@ -50,6 +50,7 @@ distribution.
 #include "SoundOperations/SoundHandler.hpp"
 #include "recovery.h"
 #include "replacementactivity.h"
+#include "utils/updaterestart.h"
 
 #include "utils/ash.h"
 #include "U8Archive.h"
@@ -161,6 +162,11 @@ int	main( int argc, char *argv[] )
 	// IOS, disc and USB operations also use low-memory scratch space, so preserve
 	// the complete stub before any subsystem has a chance to touch it.
 	PreserveLoaderStub();
+	// Only a warm update handoff needs to release the previous IOS USB clients.
+	// New process, no live WPAD/mouse callbacks, no GX/audio yet. Normal loader
+	// launches and in-process theme/language changes keep their working path.
+	const bool updateRestart = UpdateRestart::Requested(argc, argv);
+	const int usbRestartResult = updateRestart ? UpdateRestart::ReleaseUsbSession() : 0;
 
 	// good enough.  we're not using rand for any 1337 crpto stuff
 	srand( time( NULL ) );
@@ -184,6 +190,12 @@ int	main( int argc, char *argv[] )
 			"boot entry-ios=%d usb-runtime=%s", entryIos,
 			entryIos == 58 ? "ios58" : "disabled" );
 		AppendRuntimeLog( bootEvent );
+		if(updateRestart)
+		{
+			snprintf(bootEvent, sizeof(bootEvent), "update-restart usb-release=%d",
+				usbRestartResult);
+			AppendRuntimeLog(bootEvent);
+		}
 	}
 	// WPAD and the standard USB input libraries share libogc's host owner.
 	// No raw HID/VEN handles are reserved before Bluetooth initialization.

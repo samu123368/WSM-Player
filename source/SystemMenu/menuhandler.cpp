@@ -901,7 +901,10 @@ void MenuHandler::RestartUpdatedPlayer()
 	ShutdownAudio();
 	// This launcher validates/loads the new DOL before any irreversible shutdown
 	// and supplies argv[0], preserving the installation directory across reload.
-	ContentLauncher::LaunchHomebrewDirectory(Settings::applicationPath.c_str());
+	std::vector<std::string> restartArguments;
+	restartArguments.push_back("--wsm-update-restart");
+	ContentLauncher::LaunchHomebrewDirectory(Settings::applicationPath.c_str(),
+		restartArguments);
 	// Only validation/I/O failure returns. Keep the still-running app usable.
 	BannerAsync::RestartAfterLaunchFailure();
 	if(discAwake) diHandler->Wake();
