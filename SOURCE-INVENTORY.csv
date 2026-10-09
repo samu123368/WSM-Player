@@ -9,8 +9,8 @@ LICENSES/libogc.txt,2550,386b57f32d87ed0c3a04ef54ad8a43c8b307d6a72ce5339fdce1c29
 Makefile,8083,f456f6c7e35146ae266c59f7c6a67baa3595877e4a0630ccd4d6a8140d79adb1,Manual provenance review; no recognized notice in file
 source/Animator.cpp,7913,309a005e49d0f7b05190a1851ac3130bbad86b07443cad813b53348d50bb903e,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Animator.h,3997,cefb95803ee4f871af6a62fc81dced2d8aa05e95cfe14cbdc1f50880e18a8db5,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/Banner.cpp,130701,cf66d6430694d8e03442b380de9703c56a8a01b8a4dba489305a6d6f43f87e09,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/Banner.h,5922,a244f5eda00cd9aedf1f1c3fdbd2a78c85d6d9d7f1b42d2d1f36ce7d08d3184e,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/Banner.cpp,133332,a2b68c0b587908ccfd72f3106b1ab2e6b065a8a328e5a4e6274b184b5fed06fc,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/Banner.h,6277,9cdceafbef7f004b730f80ed70033c300fdd05e728cdc0bd679c4a04cea69a13,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Layout.cpp,23217,a9bfc5bf40522c711cfd07b433e3f9d8ed6f1c70eb14182f4539efdbef76e3a7,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Layout.h,5712,a65d565373cd905198507d5363018a5a27299ee0e1c4429976c95f0bfe014983,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Material.cpp,17948,dddc7a16d2419c76911d881ce6247740e320cabaccecaa46206c33abf8bcc5d3,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -115,7 +115,7 @@ source/SystemMenu/menuaudio.cpp,1812,3ff9fcd2e6ac9ebaf5a267b30c4e784c67f2570f876
 source/SystemMenu/menuaudio.h,621,34518d225c2535ecce8cf2ea64edb0b26aac53541199ac04c5b0cdec225934cc,Manual provenance review; no recognized notice in file
 source/SystemMenu/menufreecamera.cpp,4198,adfee4be88cdf70b011fa9e6071051cfd94dc8416d3fea544024c4022583b4f3,Manual provenance review; no recognized notice in file
 source/SystemMenu/menufreecamera.h,1458,d95655045af189fcd3525f9f00d5b7dd0de2327e64bdb1a7b93428f0c49c53d7,Manual provenance review; no recognized notice in file
-source/SystemMenu/menuhandler.cpp,98278,c1b99be6064f62da625f62a2afe2f489f68fa9492bf05f6341cfb2cd45615201,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/menuhandler.cpp,98296,0a2de279f06d5adfdb2f413479ca1d9d9cf1fc9252855ca5137e05eb0561109b,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/menuhandler.h,7683,40797864c317d927918d4b43ca604f6d14575f0cd296313b6fd76c164dd188c3,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/messageboarddate.h,952,02702e9259e37538e0ecfb6c9eccaddbbaef33e2f1a74f9b334f7b4fc7ee20c3,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardlive.cpp,11698,be78532a857351b60a97a76753c898047a46905496cd9da2582a85563ad84d21,Manual provenance review; no recognized notice in file
@@ -255,7 +255,7 @@ source/utils/updateformat.cpp,6200,6035b87bea205c538c929372b2da20ea021ef08690494
 source/utils/updateformat.h,821,11d1f89461d259f9e0d456fc7ce165eb3e546e8092a768e35380618af112d99a,Manual provenance review; no recognized notice in file
 source/video.cpp,16514,ac89b8561fbcad91b14e46ad838e7c2c1d0202067c9cb9c54f12e0d210bf84c7,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/video.h,1013,5b70b8ffc628760d19cf64bd81e1c71b3df2b75a32ee894541161b95432a7377,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,4ac8d55312f2654aca1abbae6d04ab3b65e2b7acdd3b75679cd5b9c787631bb8,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,3d098b828abb84b0fcff9280543dc5a4e26850401edf46eea6db674b7143a36a,Manual provenance review; no recognized notice in file
 README.md,3643,0c657c5307b6d72fd8b7ca54683bea7a85fde8acdb5b6f3e5f560524ee429c64,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

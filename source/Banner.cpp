@@ -23,6 +23,7 @@ distribution.
 */
 #include <stdarg.h>
 #include <malloc.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -2200,6 +2201,7 @@ Banner::Banner( const u8 *data, u32 len )
 	memset( customPreviewText, 0, sizeof( customPreviewText ) );
 	memset( everybodyVotesText, 0, sizeof( everybodyVotesText ) );
 	forecastLocalArtAttempted[0]=forecastLocalArtAttempted[1]=false;
+	BeginBannerPresentation();
 	Load(data, len);
 }
 
@@ -2603,6 +2605,38 @@ void Banner::RefreshGeneratedChannelText()
 	appliedPreviewRevision = revision;
 }
 
+void Banner::BeginBannerPresentation()
+{
+	bannerInfoFrames = 0;
+	bannerInfoDelayFrames = (_CONF_GetVideo() == CONF_VIDEO_PAL
+		&& _CONF_GetEuRGB60() < 1) ? 50 : 60;
+	bannerFullyOpened = false;
+	newsBannerExtent = 0.0f;
+	newsBannerExtentRevision = ~0U;
+}
+
+void Banner::PrepareBannerFrame(bool fullyOpened)
+{
+	bannerFullyOpened = fullyOpened;
+	RefreshGeneratedChannelText();
+}
+
+static u8 BannerInformationAlpha(u32 frames, u32 delay, u32 fadeFrames)
+{
+	if (frames <= delay) return 0;
+	const u32 fade = frames - delay;
+	return fade >= fadeFrames ? 255 : (u8)(fade * 255 / fadeFrames);
+}
+
+static float NewsTickerPosition(u32 frames, u32 delay, float lastPointRight)
+{
+	if (frames <= delay) return 0.0f;
+	// Keep the native two-pixel scroll. As soon as the final point leaves the
+	// 608-pixel banner, show the first column again -- no empty exit/intro tail.
+	const u32 cycle = (u32)std::max(1.0f, ceilf((lastPointRight + 304.0f) / 2.0f));
+	return -2.0f * (float)((frames - delay) % cycle);
+}
+
 void Banner::ApplyGeneratedChannelText()
 {
 	if( !layout_banner )
@@ -2760,10 +2794,21 @@ void Banner::ApplyGeneratedChannelText()
 			SetGeneratedTextPaneFitted( layout_banner, supportPanes[i],
 				generatedText[9], 28, 0.25f );
 		if( japaneseLayout ) LocalizeJapaneseForecastDay( layout_banner );
+		// Both layouts use `all` for the information layer, below the title.
+		// Its native Rso0 fade lasts 16 frames; start it only after the menu zoom
+		// is complete and the full one-second wait has elapsed.
+		Pane *information = layout_banner->FindPane("all");
+		if (information)
+			information->SetAlpha(BannerInformationAlpha(bannerInfoFrames,
+				bannerInfoDelayFrames, 16));
 	}
 	else
 	{
 		const u32 headlineCount = LoadNewsGeneratedText( generatedText );
+		const u32 revision = ChannelPreview::Revision();
+		const bool measureExtent = newsBannerExtent <= 0.0f
+			|| newsBannerExtentRevision != revision;
+		if (measureExtent) newsBannerExtent = 0.0f;
 		SelectNewsGlobe( layout_banner );
 		SetNamedPaneVisible( layout_banner, "text", false );
 		SetNamedPaneVisible( layout_banner, "news", true );
@@ -2799,7 +2844,31 @@ void Banner::ApplyGeneratedChannelText()
 				else
 					SetGeneratedTextPane( layout_banner, telopName,
 						generatedText[ i + 1 ] );
+				if (measureExtent)
+				{
+					float width = layout_banner->MeasureTextbox(telopName);
+					if (ChannelPreview::Get().news.enabled)
+					{
+						const u32 length = LongestTextLine(generatedText[i + 1]);
+						width *= length > 46 ? std::max(0.18f, 46.0f / length) : 1.0f;
+					}
+					if (width <= 0.0f) width = 638.0f;
+					newsBannerExtent = std::max(newsBannerExtent,
+						(float)(i / 3) * 680.0f + 42.0f + width + 12.0f);
+				}
 			}
+		}
+		newsBannerExtentRevision = revision;
+		Pane *news = layout_banner->FindPane("news");
+		Pane *line = layout_banner->FindPane("line");
+		if (news)
+			news->SetAlpha(BannerInformationAlpha(bannerInfoFrames,
+				bannerInfoDelayFrames, 32));
+		if (line)
+		{
+			line->SetAlpha(255);
+			line->SetPosition(NewsTickerPosition(bannerInfoFrames,
+				bannerInfoDelayFrames, newsBannerExtent), line->GetPosY());
 		}
 	}
 }
@@ -3387,6 +3456,9 @@ Animation *Banner::LoadAnimation( const U8Archive &theArc, const std::string &la
 
 void Banner::AdvanceBanner()
 {
+	// Count only frames displayed fully open, not loading/zooming or HOME.
+	if (bannerFullyOpened && bannerInfoFrames < 0xffffffffU)
+		++bannerInfoFrames;
 	EnsureGeneratedChannelDataCurrent();
 	if( bannerObj )
 		bannerObj->Advance();
@@ -3448,6 +3520,7 @@ void Banner::AdvanceIcon()
 
 void Banner::UnloadBanner()
 {
+	BeginBannerPresentation();
 	forecastBannerImagePath.clear();
 	DELETE( marioKartCarouselObj[ 0 ] );
 	DELETE( marioKartCarouselObj[ 1 ] );

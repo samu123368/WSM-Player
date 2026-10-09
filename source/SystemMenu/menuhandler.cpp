@@ -621,6 +621,7 @@ bool MenuHandler::PrepareBannerSelection( int index )
 	}
 
 	selectedIdx = index;
+	selectedBanner->BeginBannerPresentation();
 	bigBannerObj->Start();
 	return true;
 }
@@ -1626,7 +1627,7 @@ void MenuHandler::DoGrid()
                             gcBanner->Render( GXmodelView2D, ScreenProps, widescreen );
                             break;
                         case DBSt_WiiBanner:
-							if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+							if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
 							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
                             selectedBanner->AdvanceBanner();
                             break;
@@ -1634,7 +1635,7 @@ void MenuHandler::DoGrid()
                     }
                     else
                     {
-						if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+						if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
 						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
                         selectedBanner->AdvanceBanner();
                     }
@@ -1737,7 +1738,7 @@ void MenuHandler::DoGrid()
 					gcBanner->Render( GXmodelView2D, ScreenProps, widescreen );
 					break;
 				case DBSt_WiiBanner:
-					if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+					if( selectedBanner ) selectedBanner->PrepareBannerFrame(true);
 					bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen );
 					selectedBanner->AdvanceBanner();
 					break;
@@ -1745,7 +1746,7 @@ void MenuHandler::DoGrid()
 			}
 			else
 			{
-				if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+				if( selectedBanner ) selectedBanner->PrepareBannerFrame(true);
 				bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen );
 				selectedBanner->AdvanceBanner();
 			}
@@ -1829,7 +1830,7 @@ void MenuHandler::DoGrid()
                             gcBanner->Render( GXmodelView2D, ScreenProps, widescreen );
                             break;
                         case DBSt_WiiBanner:
-							if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+							if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
 							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
                             selectedBanner->AdvanceBanner();
                             break;
@@ -1837,7 +1838,7 @@ void MenuHandler::DoGrid()
                     }
                     else
                     {
-						if( selectedBanner ) selectedBanner->RefreshGeneratedChannelText();
+						if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
 						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
                         selectedBanner->AdvanceBanner();
                     }

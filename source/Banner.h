@@ -44,6 +44,10 @@ public:
 	// Advance the selected banner plus any channel-specific animation
 	// controllers which cannot safely share Object's single AnimationLink.
 	void AdvanceBanner();
+	// Called by the menu before drawing: zoom frames do not consume the
+	// Forecast/News reveal delay. HOME pauses naturally with the render loop.
+	void BeginBannerPresentation();
+	void PrepareBannerFrame(bool fullyOpened);
 	// Advance a grid icon, then restore generated News/Forecast panes which the
 	// native BRLAN may have hidden or moved on that frame.
 	void AdvanceIcon();
@@ -91,6 +95,11 @@ protected:
 	float marioKartCarouselDelay;
 	float marioKartCarouselLoopEnd;
 	bool marioKartCarouselStarted;
+	u32 bannerInfoFrames;
+	u32 bannerInfoDelayFrames;
+	bool bannerFullyOpened;
+	float newsBannerExtent;
+	u32 newsBannerExtentRevision;
 
 	std::map< std::string, Animation *>iconBrlans;
 	std::map< std::string, Animation *>bannerBrlans;
