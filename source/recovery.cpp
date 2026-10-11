@@ -56,6 +56,7 @@ namespace
 
 	void PowerOffConsole()
 	{
+		if( !recoveryActive ) Recovery::LogConsoleAction( "console-power-request" );
 		SYS_ResetSystem( SYS_POWEROFF, 0, 0 );
 		// Only reached if the configured shutdown was rejected by IOS.
 		STM_ShutdownToStandby();
@@ -64,6 +65,7 @@ namespace
 
 	void ResetConsole()
 	{
+		if( !recoveryActive ) Recovery::LogConsoleAction( "console-reset-request" );
 		SYS_ResetSystem( SYS_RESTART, 0, 0 );
 		STM_RebootSystem();
 		for( ;; ) __asm__ volatile( "sync" );
@@ -260,10 +262,15 @@ void Recovery::InitializeConsoleButtons()
 
 void Recovery::PollConsoleButtons()
 {
+	if( !resetCallbackInstalled ) return;
 	// POWER takes precedence if both physical requests arrive together. Never
 	// perform these blocking IOS operations from an IRQ or Bluetooth callback.
 	if( powerRequested ) PowerOffConsole();
-	if( resetRequested || SYS_ResetButtonDown() ) ResetConsole();
+	// Only a new SDK reset event is a user request. Reading the raw RESET GPIO
+	// during early forwarded startup can interpret the launcher's state as a
+	// held button and reboot before the warning screen. Keep the original SDK
+	// callback registration point in Initialize(), after input is ready.
+	if( resetRequested ) ResetConsole();
 }
 
 void Recovery::Initialize()

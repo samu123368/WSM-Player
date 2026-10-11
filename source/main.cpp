@@ -51,6 +51,7 @@ distribution.
 #include "SystemMenu/Inputs.h"
 #include "SoundOperations/SoundHandler.hpp"
 #include "recovery.h"
+#include "wsmversion.h"
 #include "replacementactivity.h"
 #include "utils/updaterestart.h"
 
@@ -107,9 +108,7 @@ namespace
 
 	void ReturnToLoader()
 	{
-		const bool hasStub = (savedLoaderStub && HasLoaderStub(savedLoaderStub))
-			|| HasLoaderStub((const void *)LoaderStubAddress);
-		if(RunningInDolphin() || !hasStub)
+		if(RunningInDolphin())
 		{
 			// Direct DOL boots in Dolphin need an explicit NAND title launch,
 			// not exit(0), which may just terminate the emulation. The emulator's
@@ -163,6 +162,13 @@ namespace
 	}
 }
 
+void Recovery::LogConsoleAction( const char *event )
+{
+	// Called only by the input/recovery loop, never an IRQ callback. Preserve a
+	// diagnostic before the console action so an unexpected reboot is traceable.
+	AppendRuntimeLog( event );
+}
+
 extern "C" void __wrap___reload()
 {
 	// Never jump directly into a loader stub from an exception.  At that point
@@ -186,7 +192,6 @@ int	main( int argc, char *argv[] )
 	// IOS, disc and USB operations also use low-memory scratch space, so preserve
 	// the complete stub before any subsystem has a chance to touch it.
 	PreserveLoaderStub();
-	Recovery::InitializeConsoleButtons();
 	// Only a warm update handoff needs to release the previous IOS USB clients.
 	// New process, no live WPAD/mouse callbacks, no GX/audio yet. Normal loader
 	// launches and in-process theme/language changes keep their working path.
@@ -210,9 +215,9 @@ int	main( int argc, char *argv[] )
 	if( sdMounted ) ReplacementActivity::Initialize();
 	if( sdMounted )
 	{
-		char bootEvent[ 64 ];
+		char bootEvent[ 96 ];
 		snprintf( bootEvent, sizeof( bootEvent ),
-			"boot entry-ios=%d usb-runtime=%s", entryIos,
+			"boot build=%lu entry-ios=%d usb-runtime=%s", (unsigned long)WSM_UPDATE_BUILD, entryIos,
 			entryIos == 58 ? "ios58" : "disabled" );
 		AppendRuntimeLog( bootEvent );
 		if(updateRestart)
