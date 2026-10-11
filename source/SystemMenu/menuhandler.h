@@ -62,6 +62,9 @@ public:
 
 	// enters the main loop
 	void Start();
+	// Never constructs a menu during early boot or recovery. Normal shutdown
+	// reuses its already-running fade renderer without polling input again.
+	static bool TryFadeForPowerOff();
 
 private:
 	enum
@@ -168,7 +171,7 @@ private:
 	bool gridFadeInPending;
 	int gridFadeInFrames;
 	bool wiiOptionsFadePending;
-	void FadeDisplayedMenuToBlack();
+	void FadeDisplayedMenuToBlack( bool poweringOff = false );
 	void ReleaseSuspendedGrid();
 
 	SettingsSelect *setupSelect;

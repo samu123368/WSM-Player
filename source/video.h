@@ -15,7 +15,7 @@ void InitVideo ();
 void ReinitializeVideoAfterIosReload();
 void StopGX();
 void ResetVideo_Menu();
-void Menu_Render();
+void Menu_Render( bool heartbeat = true );
 void FadeDisplayToBlack();
 void DrawSquare(float x, float y, float width, float height, const GXColor &color);
 void LoadMenuPositionMatrix(const Mtx &modelview,u32 slot);

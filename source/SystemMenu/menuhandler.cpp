@@ -43,6 +43,7 @@ distribution.
 #include "Texture.h"
 #include "video.h"
 #include "recovery.h"
+#include "uifade.h"
 #include "appsettingsscreen.h"
 #include "playerupdate.h"
 #include "SystemFont.h"
@@ -996,7 +997,14 @@ static u8 GridEntryFadeAlpha( int frame, int frames )
 	return (u8)(255.0f * (1.0f - t * t * (3.0f - 2.0f * t)) + 0.5f);
 }
 
-void MenuHandler::FadeDisplayedMenuToBlack()
+bool MenuHandler::TryFadeForPowerOff()
+{
+	if( !instance ) return false;
+	instance->FadeDisplayedMenuToBlack( true );
+	return true;
+}
+
+void MenuHandler::FadeDisplayedMenuToBlack( bool poweringOff )
 {
 	// Freeze the complete outgoing screen while fading. Do not re-run its
 	// button callbacks or authored animations after they requested the exit.
@@ -1015,26 +1023,33 @@ void MenuHandler::FadeDisplayedMenuToBlack()
 	// menu's cropped native-layout projection to it a second time.
 	BuildHomeMenuProjection( MainProjection );
 	const Vec2f screen = { (f32)screenwidth, (f32)screenheight };
-	for( int frame = 0; frame <= WiiOptionsFadeFrames; ++frame )
+	const int frames = poweringOff ? UiFade::SystemSettingsFrames : WiiOptionsFadeFrames;
+	for( int frame = 0; frame <= frames; ++frame )
 	{
-		CInputs::Instance()->Update();
-		CInputs::Instance()->ClearButtonsDown();
+		if( !poweringOff )
+		{
+			CInputs::Instance()->Update();
+			CInputs::Instance()->ClearButtonsDown();
+		}
 		Recovery::SetCheckpoint( 0x150, "fading Wii Options transition" );
 		LWP_MutexLock( drawMutex );
 		Pane::ResetRenderClip();
 		GX_LoadProjectionMtx( MainProjection, GX_ORTHOGRAPHIC );
 		DrawHomeSnapshot( snapshot, screen );
-		DrawSquare( 0, 0, screen.x, screen.y,
-			(GXColor){0,0,0,(u8)(255 - GridEntryFadeAlpha(frame, WiiOptionsFadeFrames))} );
+		const u8 alpha = poweringOff ? UiFade::SystemSettingsAlpha( frame )
+			: 255 - GridEntryFadeAlpha( frame, frames );
+		DrawSquare( 0, 0, screen.x, screen.y, (GXColor){0,0,0,alpha} );
 		LWP_MutexUnlock( drawMutex );
-		Menu_Render();
+		// POWER is already latched. Polling it via Menu_Render's heartbeat or
+		// CInputs here would recursively start another shutdown fade.
+		Menu_Render( !poweringOff );
 	}
 	// Menu_Render fences every submitted snapshot frame before texture release.
 	delete snapshot;
 	free( pixels );
 	memcpy( MainProjection, savedProjection, sizeof(Mtx44) );
 	GX_LoadProjectionMtx( MainProjection, GX_ORTHOGRAPHIC );
-	CInputs::Instance()->ClearButtonsDown();
+	if( !poweringOff ) CInputs::Instance()->ClearButtonsDown();
 }
 
 bool MenuHandler::UpdateFreeCamera( const Vec2f &screen, bool allowInput )

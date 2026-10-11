@@ -35,7 +35,7 @@
 #include "utils/ImageWrite.h"
 #include "utils/TextureConverter.h"
 #include "recovery.h"
-#include "uifade.h"
+#include "SystemMenu/menuhandler.h"
 #include "SystemMenu/renderinspection.h"
 
 #define DEFAULT_FIFO_SIZE 256 * 1024 * 3
@@ -284,7 +284,7 @@ void StopGX()
  *
  * Renders everything current sent to GX, and flushes video
  ***************************************************************************/
-void Menu_Render()
+void Menu_Render( bool heartbeat )
 {
 	whichfb ^= 1; // flip framebuffer
 	GX_CopyDisp(xfb[whichfb],GX_TRUE);
@@ -293,52 +293,18 @@ void Menu_Render()
 	VIDEO_Flush();
 	VIDEO_WaitVSync();
 	frameCount++;
-	Recovery::Heartbeat();
+	if( heartbeat ) Recovery::Heartbeat();
 }
 
 void FadeDisplayToBlack()
 {
 	if( !vmode ) return;
-	const u32 bytes = VIDEO_GetFrameBufferSize( vmode );
-	const u8 *display = (const u8 *)VIDEO_GetCurrentFramebuffer();
-	if( display != (const u8 *)xfb[ 0 ] && display != (const u8 *)xfb[ 1 ] )
-		display = (const u8 *)xfb[ whichfb ];
-	u8 *snapshot = NULL;
-	if( bytes && !( bytes & 3 ) && display && xfb[ 0 ] && xfb[ 1 ] )
-		snapshot = (u8 *)memalign( 32, bytes );
-	if( snapshot )
-	{
-		memcpy( snapshot, display, bytes );
-		int output = display == (const u8 *)xfb[ 0 ] ? 1 : 0;
-		const int frames = UiFade::SystemSettingsFrames;
-		// Fade the complete displayed screen, including overlays and 3D views.
-		// CPU XFB conversion needs neither GX nor menu callbacks. YCbCr black
-		// is Y=16, Cb/Cr=128, not zero. LUTs avoid per-pixel division on Wii.
-		for( int frame = 1; frame <= frames; ++frame )
-		{
-			const int brightness = 255 - UiFade::SystemSettingsAlpha( frame );
-			u8 luma[ 256 ], chroma[ 256 ];
-			for( int value = 0; value < 256; ++value )
-			{
-				luma[ value ] = 16 + ( value - 16 ) * brightness / 255;
-				chroma[ value ] = 128 + ( value - 128 ) * brightness / 255;
-			}
-			u8 *pixels = (u8 *)xfb[ output ];
-			for( u32 offset = 0; offset < bytes; offset += 4 )
-			{
-				pixels[ offset ] = luma[ snapshot[ offset ] ];
-				pixels[ offset + 1 ] = chroma[ snapshot[ offset + 1 ] ];
-				pixels[ offset + 2 ] = luma[ snapshot[ offset + 2 ] ];
-				pixels[ offset + 3 ] = chroma[ snapshot[ offset + 3 ] ];
-			}
-			VIDEO_SetNextFramebuffer( xfb[ output ] );
-			VIDEO_Flush();
-			VIDEO_WaitVSync();
-			output ^= 1;
-		}
-		free( snapshot );
-	}
-	// Also gives safe immediate black if the snapshot allocation failed.
+	// Reuse the menu's RGB texture + GX black-overlay renderer instead of the
+	// direct YCbCr framebuffer writer used during the reported green fade.
+	// No input/heartbeat is pumped during power-off.
+	MenuHandler::TryFadeForPowerOff();
+	// Startup without a menu instance still shuts down safely, without creating
+	// a menu or allocating recovery graphics just to fade it.
 	VIDEO_SetBlack( TRUE );
 	VIDEO_Flush();
 	VIDEO_WaitVSync();
