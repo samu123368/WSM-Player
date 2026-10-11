@@ -16,6 +16,7 @@ void ReinitializeVideoAfterIosReload();
 void StopGX();
 void ResetVideo_Menu();
 void Menu_Render();
+void FadeDisplayToBlack();
 void DrawSquare(float x, float y, float width, float height, const GXColor &color);
 void LoadMenuPositionMatrix(const Mtx &modelview,u32 slot);
 void ShowRecoveryFramebuffer( const char *code, const char *summary,

@@ -57,6 +57,12 @@ namespace
 	void PowerOffConsole()
 	{
 		if( !recoveryActive ) Recovery::LogConsoleAction( "console-power-request" );
+		watchdogPaused = true;
+		// A press is already latched by the IRQ/Bluetooth callback. Fade once in
+		// the owning loop, without waiting for a held button or another press.
+		// A damaged recovery session must still shut down without allocating or
+		// touching its potentially stalled graphics state.
+		if( !recoveryActive ) FadeDisplayToBlack();
 		SYS_ResetSystem( SYS_POWEROFF, 0, 0 );
 		// Only reached if the configured shutdown was rejected by IOS.
 		STM_ShutdownToStandby();

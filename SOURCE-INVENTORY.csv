@@ -189,7 +189,7 @@ source/homebrew/homebrewbanner.cpp,4192,516fe021b1299fd170a245156208afe12b4ea1e4
 source/homebrew/homebrewbanner.h,1794,4d354acc50d81bce54e64cb551203327e973e59253115aff5c1faf930d4ec4e6,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/main.cpp,9159,d9f0950b9c8a4beb1ceeeec8bd65ec2db3a8a9cb0c67304f3f1b2a9deb670b3c,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/original-icon.png,809,df3531e9ec7346df6f477131c8e5d2565da61b9126d47b11d3bf53d8987363e0,Allowlisted original/Noto-derived asset; recorded separately
-source/recovery.cpp,10235,bf124182b5b226d61763a7404ed4a71652d9a54373869f8a78b7979b7e3caae7,Manual provenance review; no recognized notice in file
+source/recovery.cpp,10585,23dea8792c0a788288b534498a0bea4421240de734781ff3288e41b02a3a1930,Manual provenance review; no recognized notice in file
 source/recovery.h,564,2fca8e84fb60fac5ee7be4646ba66b6d9cb5e714382f009a715f09843d982121,Manual provenance review; no recognized notice in file
 source/replacementactivity.cpp,7555,ae5e985cfc4cf389057c3488f516196699915435cdc9672914a28eed2eb9d47b,Manual provenance review; no recognized notice in file
 source/replacementactivity.h,857,93d271b58e0f3c7ecc225e94b521dda80e35863561843347aa359e9abeedfbd0,Manual provenance review; no recognized notice in file
@@ -255,9 +255,9 @@ source/utils/updateformat.cpp,6200,6035b87bea205c538c929372b2da20ea021ef08690494
 source/utils/updateformat.h,821,11d1f89461d259f9e0d456fc7ce165eb3e546e8092a768e35380618af112d99a,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.cpp,1457,0811b89f0b747d9ddec81ddf8a75e23de63e77d95764f3c834a952470b916159,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.h,385,6064f2342860f4dc7e641ee1a75567891ac56121f1b8552ef8840efcda7a48af,Manual provenance review; no recognized notice in file
-source/video.cpp,16514,ac89b8561fbcad91b14e46ad838e7c2c1d0202067c9cb9c54f12e0d210bf84c7,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/video.h,1013,5b70b8ffc628760d19cf64bd81e1c71b3df2b75a32ee894541161b95432a7377,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,ef3077f1058b1a0748d9a2cc681315b67d98d49760223cf7938c6c3bf8d0d79b,Manual provenance review; no recognized notice in file
+source/video.cpp,18251,f34760ad1bab791be14bf4b573f9a04ed7199bbe81eacbdaae47db5878328c7f,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/video.h,1040,dc7e1727da94b5f248e10fa1bbd9e5e082577eacdd26d6ad56ddfdb44f8b9585,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,16785fb398714d3a86981386b2c4bef978ec17d2f5d2f933c0f028d9e8d5b21c,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file
