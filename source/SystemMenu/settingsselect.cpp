@@ -25,6 +25,7 @@ distribution.
 #include "Inputs.h"
 #include "appsettingsscreen.h"
 #include "settingsselect.h"
+#include "uifade.h"
 #include "video.h"
 #include <ogc/lwp_watchdog.h>
 
@@ -269,14 +270,14 @@ void SettingsSelect::Render( Mtx &modelview, const Vec2f &ScreenProps, bool wide
 	}
 	if( IsSystemSettingsTransition() )
 	{
-		const int frames = 24;
+		const int frames = UiFade::SystemSettingsFrames;
 		CInputs::Instance()->ClearButtonsDown();
 		if( state == St_SystemSettingsFadeOut )
 		{
 			if( settingsReturning ) appSettings->Render( modelview, ScreenProps, widescreen, false );
 			else layout->Render( modelview, ScreenProps, widescreen );
 			DrawSquare( 0, 0, ScreenProps.x, ScreenProps.y,
-				(GXColor){0, 0, 0, (u8)( ++settingsFadeFrame * 255 / frames )} );
+				(GXColor){0, 0, 0, (u8)UiFade::SystemSettingsAlpha( ++settingsFadeFrame )} );
 			if( settingsFadeFrame >= frames )
 			{
 				settingsBlackStarted = gettime();
@@ -300,7 +301,7 @@ void SettingsSelect::Render( Mtx &modelview, const Vec2f &ScreenProps, bool wide
 			if( settingsReturning ) layout->Render( modelview, ScreenProps, widescreen );
 			else appSettings->Render( modelview, ScreenProps, widescreen, false );
 			DrawSquare( 0, 0, ScreenProps.x, ScreenProps.y,
-				(GXColor){0, 0, 0, (u8)( settingsFadeFrame * 255 / frames )} );
+				(GXColor){0, 0, 0, (u8)UiFade::SystemSettingsAlpha( settingsFadeFrame )} );
 			if( --settingsFadeFrame <= 0 )
 			{
 				if( settingsReturning ) MakeStartReady();

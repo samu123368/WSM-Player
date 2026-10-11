@@ -101,8 +101,8 @@ source/SystemMenu/greybackground.h,1839,c2d532da084d5f8df67be74937e71fc3bb5ac94a
 source/SystemMenu/healthscreen.cpp,6502,f8ca0c40ec79f68d03c801be98c0b2bb089b1421704fad713d6220f36ee927c9,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/healthscreen.h,2219,8cd51b8829e8e23f76e112652b4023599519897f64bd275f622d778fd3b8e193,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/home_language_textures.inc,582,dbdbef0a67eb16149cc6b17b9d3e29a9d85298efafed035b8b7f24499fec2556,Manual provenance review; no recognized notice in file
-source/SystemMenu/homemenu.cpp,40700,a54df0ecb7af5af90350e0ba9bd12dcfa8b786bfecd43997c50e92f48d12fa31,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/homemenu.h,4029,9feb8823675752ce947ff7a6b077faac2a8c614a435eb106e1360e59757d342c,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/homemenu.cpp,40776,615bc63fcc2957f7fecfb7d1ae55bbc64f8f5b8875de4c295e160ff53bec9588,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/homemenu.h,4056,720e3b65cd8cb37f691e8ccc43c6639eca768fb6d6a5b80cf255fe8d032de4c4,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/localization.cpp,46960,6601c1a8d300ebe10d42714146da0fe90feddc41ecd3bed0369ca02a4ca40bb3,Manual provenance review; no recognized notice in file
 source/SystemMenu/localization.h,1324,a9fb6010032bc9e8bf3560ba9626feca4245e0bd7882e49a68882207123d96da,Manual provenance review; no recognized notice in file
 source/SystemMenu/localization_catalogue.inc,362216,482f443c2c4a5f5018467056d3b8355816a64ec2c63eac59b6463fc04328450f,Manual provenance review; no recognized notice in file
@@ -138,7 +138,7 @@ source/SystemMenu/settingsbg.cpp,1402,3cd68c93aaefdbf8ee8846abd032d7071ce5747e7b
 source/SystemMenu/settingsbg.h,1317,6efd68593eca5e6749d96c758aaf777372e633c15100508d92aa61d7ca3bfa18,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsbtn.cpp,4030,3fa7de75ded195eb18a3f41ff85207db175bbe814868666e008df53030cb861f,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsbtn.h,1750,e7350f896a1bbc712cc7d86105d1209b29cf4ec013af8366a1a7e67891ef5097,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/settingsselect.cpp,27489,4a2b1dd95519286211d8960a9dd12497dd1ad3b1673c290156af0c896635c52c,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/settingsselect.cpp,27559,3013338258dbac57a589c98257a99bdff16b41741c527b7d2380ae07b09c06a9,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsselect.h,4749,23a0f6ecb6352f4d5deee0c78d43ff345ec5ac3dcf94982c6beef9572e23c6fc,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/systemmenuresource.cpp,2847,f0ed7a6083d6a29cfa4f435f1c6ba43374c9fab07fbcef548ba9e761b4e1e050,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/systemmenuresource.h,2346,141711a06a23aff554805e22ade6f213158dea6d1615b1432670c871b2e37b7a,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -204,6 +204,7 @@ source/tinyxml/tinyxml.cpp,37765,8b8c7d986155a05b31ab51876decc8291f6d4ff43510005
 source/tinyxml/tinyxml.h,64581,088ff116e46501b95d5f90a7f002c0a25eb1d23df3f993dcc3d96065282a9f9d,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/tinyxml/tinyxmlerror.cpp,1787,ae714cde82184a91efe0440196703296de1a0db6d58df4a2157c8dbd4819233b,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/tinyxml/tinyxmlparser.cpp,37225,0a2fff2d1b28047e1c1670cc69459f6c700069b97c00615c62441ece817064d2,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/uifade.h,450,45f04a82888faad00798c066b83c2085aece0d42049e254e55e51223815fe2c7,Manual provenance review; no recognized notice in file
 source/updatekey.h,369,2691ab62f5091f46d8d7030b387eb345d2f949206a25ac42ce04ebe4f077f13a,Manual provenance review; no recognized notice in file
 source/utils/DirList.cpp,4706,d7392e078c17f96f764c069064d913b497717511f3099d423db75500b2adc68b,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/utils/DirList.h,3195,67ac4c7542a175a0f9f553026e8fa44850871feb6a89b01b4f1720f8af28d9bb,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -255,11 +256,11 @@ source/utils/updateformat.cpp,6200,6035b87bea205c538c929372b2da20ea021ef08690494
 source/utils/updateformat.h,821,11d1f89461d259f9e0d456fc7ce165eb3e546e8092a768e35380618af112d99a,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.cpp,1457,0811b89f0b747d9ddec81ddf8a75e23de63e77d95764f3c834a952470b916159,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.h,385,6064f2342860f4dc7e641ee1a75567891ac56121f1b8552ef8840efcda7a48af,Manual provenance review; no recognized notice in file
-source/video.cpp,18251,f34760ad1bab791be14bf4b573f9a04ed7199bbe81eacbdaae47db5878328c7f,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/video.cpp,18264,a16ae59efa12c017e8f4443c08f1e716cc5fc60f388c05ee0bbf9c892c2f803c,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/video.h,1040,dc7e1727da94b5f248e10fa1bbd9e5e082577eacdd26d6ad56ddfdb44f8b9585,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,468f60bfcce52db32484cb394896f1db782f62c2ef9abef1319033c0354666ef,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,63b29485cec12207d57525ff9666d2bc7cb0f1f260962273845194e3a8452aa7,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

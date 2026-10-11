@@ -804,28 +804,9 @@ void HomeMenu::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen
 				waitForARelease = false;
 		}
 
-		if( dlgState == DSt_Active )
-		{
-			btnDlg1->Update();
-			btnDlg2->Update();
-		}
+		UpdateDialogInput();
 		btnDlg1->Advance();
 		btnDlg2->Advance();
-		for( int i = 0; i < 4; i++ )
-		{
-			if( dlgState == DSt_Active && ( Pad( i ).pB() || Pad( i ).pHome() ) )
-			{
-				CancelDialog();
-				Pad( i ).Take();
-			}
-			else if( dlgState == DSt_Active && !waitForARelease
-				&& Pad( i ).pA() && !Pad( i ).IsTaken()
-				&& !Pad( i ).IsUsbMouseConnected() )
-			{
-				DlgBtn2Clicked();
-				Pad( i ).Take();
-			}
-		}
 		if( dlgState == DSt_Opening && dialogFrames > 8 )
 		{
 			MakeDialogReady();
@@ -1335,6 +1316,23 @@ void HomeMenu::MakeDialogReady()
 	dialogFrames = 0;
 	CInputs::Instance()->ClearButtonsDown();
 	gprintf( "ReturnDialog: Opening -> Active\n" );
+}
+
+void HomeMenu::UpdateDialogInput()
+{
+	if( dlgState != DSt_Active ) return;
+	btnDlg1->Update();
+	btnDlg2->Update();
+	for( int i = 0; i < 4 && dlgState == DSt_Active; ++i )
+	{
+		Controller &pad = Pad( i );
+		if( pad.IsTaken() ) continue;
+		if( pad.pB() || pad.pHome() )
+			CancelDialog();
+		// An outside A/click belongs to this modal, but is not an implicit No.
+		// The native Yes/No hit boxes above are the only pointer actions.
+		if( pad.pA() || pad.pB() || pad.pHome() ) pad.Take();
+	}
 }
 
 void HomeMenu::CancelDialog()

@@ -141,6 +141,7 @@ protected:
 	void DlgBtn2AnimDone();
 	void MakeButtonsReady();
 	void MakeDialogReady();
+	void UpdateDialogInput();
 	void CancelDialog();
 	bool DialogCloseExpired() const;
 	void ShowDialogPanes( bool show );

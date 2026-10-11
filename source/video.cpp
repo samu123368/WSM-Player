@@ -35,6 +35,7 @@
 #include "utils/ImageWrite.h"
 #include "utils/TextureConverter.h"
 #include "recovery.h"
+#include "uifade.h"
 #include "SystemMenu/renderinspection.h"
 
 #define DEFAULT_FIFO_SIZE 256 * 1024 * 3
@@ -309,13 +310,13 @@ void FadeDisplayToBlack()
 	{
 		memcpy( snapshot, display, bytes );
 		int output = display == (const u8 *)xfb[ 0 ] ? 1 : 0;
-		const int frames = ( vmode->viTVMode >> 2 ) == VI_PAL ? 25 : 30;
+		const int frames = UiFade::SystemSettingsFrames;
 		// Fade the complete displayed screen, including overlays and 3D views.
 		// CPU XFB conversion needs neither GX nor menu callbacks. YCbCr black
 		// is Y=16, Cb/Cr=128, not zero. LUTs avoid per-pixel division on Wii.
 		for( int frame = 1; frame <= frames; ++frame )
 		{
-			const int brightness = 255 * ( frames - frame ) / frames;
+			const int brightness = 255 - UiFade::SystemSettingsAlpha( frame );
 			u8 luma[ 256 ], chroma[ 256 ];
 			for( int value = 0; value < 256; ++value )
 			{
