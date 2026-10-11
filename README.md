@@ -31,7 +31,8 @@ Existing personal settings are not bundled or removed. You can also browse
 
 ## Build from source — optional, for developers
 
-Install devkitPro's devkitPPC and Wii development libraries. Use **libogc 2.10.0**
+Use **devkitPPC r46.1 (GCC 14.2.0)** and devkitPro's Wii development libraries.
+This is the toolchain used by the working real-Wii build. Use **libogc 2.10.0**
 and **libfat-ogc 2.0.1** (libdvm 2.0.1 with fatfs-mod 0.15.1); libogc 3.x
 removed exception APIs used by this source and is not a drop-in replacement.
 The Makefile links
@@ -43,12 +44,17 @@ Set `DEVKITPRO` and `DEVKITPPC` as required by devkitPro, then run:
 make -j4
 ```
 
+Do not rebuild this release with GCC 16.2: the newer-toolchain builds failed
+real-Wii forwarded startup despite passing host checks. A newer SDK migration
+needs separate hardware validation. Keep the earlier compiler and libraries in
+a separate SDK directory rather than downgrading tools used by other projects.
+
 If your installed SDK is newer, keep a separate compatible SDK directory with
 its headers in `include` and Wii libraries (including libfat) in `lib/wii`, then
 select it without replacing the global installation:
 
 ```sh
-make -j4 LIBOGC_INC=/path/to/compatible-sdk/include LIBOGC_LIB=/path/to/compatible-sdk/lib/wii WSM_LINKER_SCRIPT=/path/to/devkitppc-crtls-1.0.0/rvl.ld
+make -j4 DEVKITPRO=/path/to/compatible-sdk DEVKITPPC=/path/to/compatible-sdk/devkitPPC LIBDIRS="/path/to/portlibs/wii /path/to/portlibs/ppc"
 ```
 
 Use the official [devkitppc-crtls 1.0.0 Wii linker script](https://github.com/devkitPro/devkitppc-crtls/tree/v1.0.0)
