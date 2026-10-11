@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "wsm_usbtrace.h"
+#include "wsm_stmhook.h"
 
 // Link-time observers, not another USB owner. Pass every request/buffer through
 // unchanged. No host opens, resets, retries, allocation or filesystem operations.
@@ -39,12 +40,14 @@ s32 __wrap_IOS_Open(const char *path,u32 mode) {
  if(path){if(!strcmp(path,"/dev/usb/hid"))host=0;
           else if(!strcmp(path,"/dev/usb/ven"))host=1;}
  const s32 result=__real_IOS_Open(path,mode);
+ WSM_StmHookOpened(path,result);
  if(host>=0){const u32 level=IRQ_Disable();hostFd[host]=result>=0 ? result : -1;
   IRQ_Restore(level);Record(host,1,result,0,result,mode);}
  return result;
 }
 s32 __wrap_IOS_Close(s32 fd) {
  const int host=HostForFd(fd);const s32 result=__real_IOS_Close(fd);
+ WSM_StmHookClosed(fd,result);
  if(host>=0){Record(host,5,fd,0,result,0);
   if(result>=0){const u32 level=IRQ_Disable();
    if(hostFd[host]==fd)hostFd[host]=-1;
@@ -72,6 +75,8 @@ static s32 Complete(s32 result,void *context) {
 }
 s32 __wrap_IOS_IoctlAsync(s32 fd,s32 command,void *in,s32 inSize,void *out,
                         s32 outSize,ipccallback callback,void *context) {
+ if(WSM_StmHookHandles(fd,command))
+  return WSM_StmHookSubmit(fd,command,in,inSize,out,outSize,callback,context);
  const int host=HostForFd(fd);
  if(host<0 || (command!=1 && command!=6))
   return __real_IOS_IoctlAsync(fd,command,in,inSize,out,outSize,callback,context);

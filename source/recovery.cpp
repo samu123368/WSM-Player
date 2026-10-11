@@ -8,6 +8,7 @@
 
 #include "recovery.h"
 #include "video.h"
+#include "wsm_stmhook.h"
 
 extern "C"
 {
@@ -29,6 +30,9 @@ namespace
 	bool resetCallbackInstalled = false;
 	resetcallback previousResetCallback = NULL;
 	powercallback previousPowerCallback = NULL;
+	stmcallback previousStmCallback = NULL;
+	volatile u32 stmEvents = 0;
+	u32 loggedStmEvents = 0;
 	lwp_t watchdogThread = LWP_THREAD_NULL;
 	lwp_t mainThread = LWP_THREAD_NULL;
 	u8 watchdogStack[ 32768 ] ATTRIBUTE_ALIGN( 32 );
@@ -53,6 +57,16 @@ namespace
 
 	void WsmPowerCallback() { powerRequested = true; }
 	void WsmRemotePowerCallback( s32 ) { powerRequested = true; }
+	void WsmStmCallback( u32 events )
+	{
+		// IOS delivers flags, not necessarily a single exact event value. Keep
+		// the physical console route independent of the SDK's equality filter.
+		stmEvents |= events;
+		if( events & STM_EVENT_POWER ) powerRequested = true;
+		if( events & STM_EVENT_RESET ) resetRequested = true;
+		if( !( events & ( STM_EVENT_POWER | STM_EVENT_RESET ) )
+			&& previousStmCallback ) previousStmCallback( events );
+	}
 
 	void PowerOffConsole()
 	{
@@ -263,12 +277,30 @@ void Recovery::InitializeConsoleButtons()
 	powerRequested = false;
 	previousResetCallback = SYS_SetResetCallback( WsmResetCallback );
 	previousPowerCallback = SYS_SetPowerCallback( WsmPowerCallback );
+	previousStmCallback = STM_RegisterEventHandler( WsmStmCallback );
+	__STM_Init();
+	WSM_StmHookService();
+	char diagnostic[ 160 ];
+	WSM_StmHookDiagnostic( diagnostic, sizeof( diagnostic ) );
+	Recovery::LogConsoleAction( diagnostic );
 	resetCallbackInstalled = true;
 }
 
 void Recovery::PollConsoleButtons()
 {
 	if( !resetCallbackInstalled ) return;
+	if( !recoveryActive )
+	{
+		WSM_StmHookService();
+		if( stmEvents != loggedStmEvents )
+		{
+			loggedStmEvents = stmEvents;
+			char diagnostic[ 64 ];
+			snprintf( diagnostic, sizeof( diagnostic ), "console-stm events=%08lx",
+				(unsigned long)loggedStmEvents );
+			Recovery::LogConsoleAction( diagnostic );
+		}
+	}
 	// POWER takes precedence if both physical requests arrive together. Never
 	// perform these blocking IOS operations from an IRQ or Bluetooth callback.
 	if( powerRequested ) PowerOffConsole();
@@ -314,9 +346,11 @@ void Recovery::Shutdown()
 	{
 		SYS_SetResetCallback( previousResetCallback );
 		SYS_SetPowerCallback( previousPowerCallback );
+		STM_RegisterEventHandler( previousStmCallback );
 		WPAD_SetPowerButtonCallback( NULL );
 		previousResetCallback = NULL;
 		previousPowerCallback = NULL;
+		previousStmCallback = NULL;
 		resetCallbackInstalled = false;
 	}
 }

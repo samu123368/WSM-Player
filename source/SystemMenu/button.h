@@ -81,6 +81,8 @@ public:
 	};
 	// for overriding whatever state the button thinks it should be in
 	void SetState( State st){ state = st; }
+	// Clear both input history and native hover/click artwork on a reused modal.
+	void ResetInteraction();
 
 	// signals
 	sigslot::signal0<> Clicked;

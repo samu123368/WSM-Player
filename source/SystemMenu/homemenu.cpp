@@ -1327,6 +1327,8 @@ void HomeMenu::MakeDialogReady()
 	if( dlgState != DSt_Opening )
 		return;
 	dialogReady = true;
+	btnDlg1->ResetInteraction();
+	btnDlg2->ResetInteraction();
 	btnDlg1->SetEnabled( true );
 	btnDlg2->SetEnabled( true );
 	dlgState = DSt_Active;
@@ -1380,8 +1382,8 @@ void HomeMenu::FinishCancelDialog()
 		return;
 	btnDlg1->SetEnabled( false );
 	btnDlg2->SetEnabled( false );
-	btnDlg1->SetState( Button::St_Idle );
-	btnDlg2->SetState( Button::St_Idle );
+	btnDlg1->ResetInteraction();
+	btnDlg2->ResetInteraction();
 	ShowDialogPanes( false );
 	dialogReady = false;
 	dlgState = DSt_Hidden;

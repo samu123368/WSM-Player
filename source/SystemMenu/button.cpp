@@ -107,6 +107,20 @@ void Button::SetEnabled( bool enable )
 	}
 }
 
+void Button::ResetInteraction()
+{
+	state = St_Idle;
+	ClearAnimStack();
+	if( mouseOutAnim.anim )
+	{
+		const FrameNumber end = mouseOutAnim.end < 0.0f
+			? mouseOutAnim.anim->FrameCount() - 1.0f : mouseOutAnim.end;
+		SetAnimation( mouseOutAnim.anim->GetName(), end, end, -1.f, false );
+		SetFrame( end );
+	}
+	Pause( true );
+}
+
 void Button::Update()
 {
 	State newState = St_Idle;
