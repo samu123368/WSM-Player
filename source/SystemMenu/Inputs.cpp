@@ -212,6 +212,7 @@ CInputs::~CInputs()
 
 void CInputs::Update()
 {
+	Recovery::PollConsoleButtons();
 	// Count the WPAD settling period across every screen.  The old code reset
 	// this counter whenever a banner or settings page opened, so a user who did
 	// not remain on the channel grid for three uninterrupted seconds could keep

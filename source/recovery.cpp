@@ -25,8 +25,10 @@ namespace
 	volatile bool recoveryActive = false;
 	volatile bool exceptionPending = false;
 	volatile bool resetRequested = false;
+	volatile bool powerRequested = false;
 	bool resetCallbackInstalled = false;
 	resetcallback previousResetCallback = NULL;
+	powercallback previousPowerCallback = NULL;
 	lwp_t watchdogThread = LWP_THREAD_NULL;
 	lwp_t mainThread = LWP_THREAD_NULL;
 	u8 watchdogStack[ 32768 ] ATTRIBUTE_ALIGN( 32 );
@@ -49,6 +51,24 @@ namespace
 		resetRequested = true;
 	}
 
+	void WsmPowerCallback() { powerRequested = true; }
+	void WsmRemotePowerCallback( s32 ) { powerRequested = true; }
+
+	void PowerOffConsole()
+	{
+		SYS_ResetSystem( SYS_POWEROFF, 0, 0 );
+		// Only reached if the configured shutdown was rejected by IOS.
+		STM_ShutdownToStandby();
+		for( ;; ) __asm__ volatile( "sync" );
+	}
+
+	void ResetConsole()
+	{
+		SYS_ResetSystem( SYS_RESTART, 0, 0 );
+		STM_RebootSystem();
+		for( ;; ) __asm__ volatile( "sync" );
+	}
+
 	const char *ExceptionName( u32 exception )
 	{
 		switch( exception )
@@ -67,12 +87,7 @@ namespace
 		VIDEO_WaitVSync();
 		// A hardware warm reboot is safe even after a DSI. With WSM Player's
 		// intended Priiloader/forwarder setup it re-enters the app from its start.
-		SYS_ResetSystem( SYS_RESTART, 0, 0 );
-		usleep( 500000 );
-		// SYS_ResetSystem normally does not return. Keep STM as a fallback for IOS
-		// environments which reject the first reset request after an exception.
-		STM_RebootSystem();
-		for( ;; ) __asm__ volatile( "sync" );
+		ResetConsole();
 	}
 
 	bool RecoveryAButtonPressed()
@@ -100,8 +115,8 @@ namespace
 	{
 		for( ;; )
 		{
-			if( resetRequested || SYS_ResetButtonDown()
-				|| RecoveryAButtonPressed() )
+			Recovery::PollConsoleButtons();
+			if( RecoveryAButtonPressed() )
 				RestartFromRecovery();
 			VIDEO_WaitVSync();
 		}
@@ -233,6 +248,24 @@ namespace
 	}
 }
 
+void Recovery::InitializeConsoleButtons()
+{
+	if( resetCallbackInstalled ) return;
+	resetRequested = false;
+	powerRequested = false;
+	previousResetCallback = SYS_SetResetCallback( WsmResetCallback );
+	previousPowerCallback = SYS_SetPowerCallback( WsmPowerCallback );
+	resetCallbackInstalled = true;
+}
+
+void Recovery::PollConsoleButtons()
+{
+	// POWER takes precedence if both physical requests arrive together. Never
+	// perform these blocking IOS operations from an IRQ or Bluetooth callback.
+	if( powerRequested ) PowerOffConsole();
+	if( resetRequested || SYS_ResetButtonDown() ) ResetConsole();
+}
+
 void Recovery::Initialize()
 {
 	if( watchdogEnabled ) return;
@@ -242,7 +275,8 @@ void Recovery::Initialize()
 	checkpointDetails = "entering menu";
 	recoveryActive = false;
 	exceptionPending = false;
-	resetRequested = false;
+	InitializeConsoleButtons();
+	WPAD_SetPowerButtonCallback( WsmRemotePowerCallback );
 	watchdogEnabled = true;
 	watchdogPaused = false;
 	if( LWP_CreateThread( &watchdogThread, WatchdogMain, NULL, watchdogStack,
@@ -252,8 +286,6 @@ void Recovery::Initialize()
 		watchdogEnabled = false;
 	}
 	InstallExceptionHandlers();
-	previousResetCallback = SYS_SetResetCallback( WsmResetCallback );
-	resetCallbackInstalled = true;
 }
 
 void Recovery::Shutdown()
@@ -268,20 +300,23 @@ void Recovery::Shutdown()
 	if( resetCallbackInstalled )
 	{
 		SYS_SetResetCallback( previousResetCallback );
+		SYS_SetPowerCallback( previousPowerCallback );
+		WPAD_SetPowerButtonCallback( NULL );
 		previousResetCallback = NULL;
+		previousPowerCallback = NULL;
 		resetCallbackInstalled = false;
 	}
 }
 
 void Recovery::Heartbeat()
 {
+	PollConsoleButtons();
 	// Exception-handler table updates are process-global.  Reinstall from the
 	// UI thread at each completed frame rather than racing WPAD/IOS from the
 	// watchdog LWP.  The watchdog remains dedicated to observing progress and
 	// presenting recovery UI.
 	InstallExceptionHandlers();
 	++heartbeatSequence;
-	if( resetRequested || SYS_ResetButtonDown() ) RestartFromRecovery();
 }
 
 void Recovery::SetCheckpoint( u32 code, const char *details )

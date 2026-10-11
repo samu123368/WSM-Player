@@ -5,6 +5,10 @@
 
 namespace Recovery
 {
+	// IRQ/Bluetooth callbacks only latch requests; frame/recovery loops execute
+	// the console action. Register hardware buttons before lengthy boot work.
+	void InitializeConsoleButtons();
+	void PollConsoleButtons();
 	void Initialize();
 	void Shutdown();
 	void Heartbeat();

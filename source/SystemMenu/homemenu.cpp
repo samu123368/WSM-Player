@@ -830,11 +830,11 @@ void HomeMenu::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen
 		{
 			MakeDialogReady();
 		}
-		else if( dlgState == DSt_ClosingNo && dialogFrames > 18 )
+		else if( dlgState == DSt_ClosingNo && DialogCloseExpired() )
 		{
 			FinishCancelDialog();
 		}
-		else if( dlgState == DSt_ClosingYes && dialogFrames > 18 )
+		else if( dlgState == DSt_ClosingYes && DialogCloseExpired() )
 		{
 			FinishConfirmDialog();
 		}
@@ -1277,7 +1277,7 @@ void HomeMenu::DlgBtn2AnimDone()
 		choice = Ch_None;
 
 		// get rid of the dialog
-		dlgObj->SetAnimation( "th_HomeBtn_d_cmn_msg_out", 0, -1, -1, false );
+		dlgObj->SetAnimation( "th_HomeBtn_d_cmn_msg_rtrn", 0, -1, -1, false );
 		dlgObj->Start();
 
 		// disable dialog buttons
@@ -1285,6 +1285,7 @@ void HomeMenu::DlgBtn2AnimDone()
 		btnDlg2->SetEnabled( false );
 
 		dlgState = DSt_ClosingNo;
+		dialogFrames = 0;
 	}
 }
 
@@ -1339,18 +1340,32 @@ void HomeMenu::CancelDialog()
 	if( state != St_Dialog || dlgState != DSt_Active )
 		return;
 
-	// Some HOME-menu archives never finish (or corrupt pane state during) the
-	// common message-out animation.  Cancelling is not destructive, so dismiss
-	// it atomically instead of leaving a half-animated modal over the menu.
+	// The native return animation slides the question back up. Keep its panes
+	// visible and input disabled until the animation completes, rather than
+	// dismissing it instantly or playing the downward confirmation animation.
 	btnDlg1->SetEnabled( false );
 	btnDlg2->SetEnabled( false );
 	dialogReady = false;
 	choice = Ch_None;
 	dlgState = DSt_ClosingNo;
 	dialogFrames = 0;
+	dlgObj->SetAnimation( "th_HomeBtn_d_cmn_msg_rtrn", 0, -1, -1, false );
+	dlgObj->Start();
+	waitForARelease = true;
 	CInputs::Instance()->ClearButtonsDown();
 	gprintf( "ReturnDialog No callback fired\n" );
-	FinishCancelDialog();
+}
+
+bool HomeMenu::DialogCloseExpired() const
+{
+	const char *name = dlgState == DSt_ClosingNo
+		? "th_HomeBtn_d_cmn_msg_rtrn" : "th_HomeBtn_d_cmn_msg_out";
+	std::map<std::string, Animation *>::const_iterator it = brlans.find(name);
+	// A stalled theme must still release the modal, but a hard-coded 18-frame
+	// deadline must not cut a valid Nintendo/theme animation off halfway.
+	const float frames = it != brlans.end() && it->second
+		? it->second->FrameCount() : 0.0f;
+	return dlgObj->IsFinished() || dialogFrames > (frames > 0.0f ? frames + 2.0f : 90.0f);
 }
 
 void HomeMenu::ShowDialogPanes( bool show )

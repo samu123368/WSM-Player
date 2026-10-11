@@ -34,6 +34,11 @@ DATA		:=	source/data
 CFLAGS		=	-g -O2 -Wall $(MACHDEP) $(INCLUDE)
 CXXFLAGS	=	$(CFLAGS) -std=gnu++11
 LDFLAGS		=	-g $(MACHDEP) -Wl,-Map,$(notdir $@).map -Wl,--wrap=__reload -Wl,--wrap=IOS_Open -Wl,--wrap=IOS_Close -Wl,--wrap=IOS_Ioctl -Wl,--wrap=IOS_IoctlAsync -Wl,--wrap=GX_LoadProjectionMtx
+# Optional matching SDK link script when the installed devkitPPC defaults target
+# libogc 3.x. Keep the compatible SDK isolated instead of replacing global files.
+ifneq ($(strip $(WSM_LINKER_SCRIPT)),)
+LDFLAGS += -T$(WSM_LINKER_SCRIPT)
+endif
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------

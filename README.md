@@ -31,7 +31,10 @@ Existing personal settings are not bundled or removed. You can also browse
 
 ## Build from source — optional, for developers
 
-Install devkitPro's devkitPPC and Wii development libraries. The Makefile links
+Install devkitPro's devkitPPC and Wii development libraries. Use **libogc 2.10.0**
+and **libfat-ogc 2.0.1** (libdvm 2.0.1 with fatfs-mod 0.15.1); libogc 3.x
+removed exception APIs used by this source and is not a drop-in replacement.
+The Makefile links
 libogc, libfat, ASND, wiikeyboard, wiiuse, bte and the Wii portlibs providing
 gd, JPEG, PNG and zlib. These SDK dependencies are external, not bundled.
 Set `DEVKITPRO` and `DEVKITPPC` as required by devkitPro, then run:
@@ -40,9 +43,19 @@ Set `DEVKITPRO` and `DEVKITPPC` as required by devkitPro, then run:
 make -j4
 ```
 
-The output is `boot.dol`. A complete clean build of this snapshot was checked
-with devkitPPC r46.1 and libogc 2.10.0 on Windows/MSYS2. Platform setup and
-hardware behavior can differ; a build test is not a real-Wii test.
+If your installed SDK is newer, keep a separate compatible SDK directory with
+its headers in `include` and Wii libraries (including libfat) in `lib/wii`, then
+select it without replacing the global installation:
+
+```sh
+make -j4 LIBOGC_INC=/path/to/compatible-sdk/include LIBOGC_LIB=/path/to/compatible-sdk/lib/wii WSM_LINKER_SCRIPT=/path/to/devkitppc-crtls-1.0.0/rvl.ld
+```
+
+Use the official [devkitppc-crtls 1.0.0 Wii linker script](https://github.com/devkitPro/devkitppc-crtls/tree/v1.0.0)
+with libogc 2.10.0 when a newer compiler defaults to the libogc 3.x script.
+The output is `boot.dol`. Builds use libogc 2.10.0 and libfat-ogc 2.0.1;
+the corresponding release's `SOURCE.md` records the compiler version.
+Platform setup and hardware behavior can differ; a build test is not a real-Wii test.
 
 The old object-only `MagicPatches` dependency is replaced with readable,
 behavior-preserving C++ in `source/utils/magicpatcher.cpp`. This is a marked

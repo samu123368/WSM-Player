@@ -28,6 +28,8 @@ distribution.
 #include <math.h>
 #include <gccore.h>
 #include <ogc/ios.h>
+#include <ogc/ipc.h>
+#include <ogc/wiilaunch.h>
 #include <ogc/context.h>
 #include <ogc/stm.h>
 #include <ogc/lwp_watchdog.h>
@@ -93,8 +95,30 @@ namespace
 		__sync_synchronize();
 	}
 
+	bool RunningInDolphin()
+	{
+		// Dolphin exposes this device explicitly for homebrew. No emulator
+		// settings or input mapping is changed by this open/close probe.
+		const s32 fd = IOS_Open("/dev/dolphin", IPC_OPEN_NONE);
+		if(fd < 0) return false;
+		IOS_Close(fd);
+		return true;
+	}
+
 	void ReturnToLoader()
 	{
+		const bool hasStub = (savedLoaderStub && HasLoaderStub(savedLoaderStub))
+			|| HasLoaderStub((const void *)LoaderStubAddress);
+		if(RunningInDolphin() || !hasStub)
+		{
+			// Direct DOL boots in Dolphin need an explicit NAND title launch,
+			// not exit(0), which may just terminate the emulation. The emulator's
+			// installed Wii Menu is a valid exit target even without an HBC stub.
+			if(WII_Initialize() >= 0) WII_ReturnToMenu();
+			// Missing state.dat/tickets or an older IOS may reject that launch.
+			// libogc supplies a second explicit System Menu return path.
+			SYS_ResetSystem(SYS_RETURNTOMENU, 0, 0);
+		}
 		// Keep every libogc frontend alive and use its normal application-exit
 		// path.  Calling __lwp_thread_stopmultitasking ourselves bypassed libogc's
 		// registered handoff and DSI'd with some forwarder stubs on real hardware.
@@ -162,6 +186,7 @@ int	main( int argc, char *argv[] )
 	// IOS, disc and USB operations also use low-memory scratch space, so preserve
 	// the complete stub before any subsystem has a chance to touch it.
 	PreserveLoaderStub();
+	Recovery::InitializeConsoleButtons();
 	// Only a warm update handoff needs to release the previous IOS USB clients.
 	// New process, no live WPAD/mouse callbacks, no GX/audio yet. Normal loader
 	// launches and in-process theme/language changes keep their working path.

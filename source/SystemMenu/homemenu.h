@@ -142,6 +142,7 @@ protected:
 	void MakeButtonsReady();
 	void MakeDialogReady();
 	void CancelDialog();
+	bool DialogCloseExpired() const;
 	void ShowDialogPanes( bool show );
 	void FinishCancelDialog();
 	void FinishConfirmDialog();
