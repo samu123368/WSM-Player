@@ -2805,34 +2805,38 @@ void MenuHandler::DiscInserted( DiHandler::DiscType dt )
 void MenuHandler::DiscEjected()
 {
 	LWP_MutexLock( drawMutex );
+	// The DI worker can receive eject after drawing but before Menu_Render's
+	// fence. Do not release banner/icon texture memory still being read by GX.
+	GX_DrawDone();
 
-	if( selectedIdx == -1 && state == St_BigBanner )
+	const bool showingDisc = selectedIdx == -1 &&
+		( state == St_BigBannerFadeIn || state == St_BigBanner
+		  || state == St_BigBannerFadeOut || state == St_LaunchFade );
+	if( showingDisc )
 	{
 		StopBannerSound();
+		// An ejected disc cannot be launched when the pending delay completes.
+		if( state == St_LaunchFade ) state = St_BigBanner;
 	}
 
 	if( grid )
 	{
 		grid->DiscEjected();
 	}
-	if( dcBanner )
+	if( showingDisc || (discChannelBanner && selectedBanner == discChannelBanner) )
 	{
-		if( selectedIdx == -1 && ( state == St_BigBannerFadeIn || state == St_BigBanner ) )// the disc channel was showing the banner before
-		{
-			selectedBanner = NULL;
-			if( discBannerState == DBSt_Spinup )
-			{
-				dcBanner->EjectDisc();
-			}
-			else
-			{
-				dcBanner->Reset();
-			}
-		}
+		selectedBanner = NULL;
+		bigBannerLayout = NULL;
+		bigBannerObj = NULL;
 	}
+	// Restore even when hidden, so reopening cannot inherit DiskIn's transparent
+	// background or an unfinished insertion animation. Keep native spin/eject
+	// and unknown-disc ejection animations inside DiscChannel.
+	if( dcBanner ) dcBanner->EjectDisc();
 
 	DELETE( discChannelBanner );
 	FREE( discChannelBannerData );
+	discChannelBannerDataLen = 0;
 
 	discBannerState = DBSt_None;
 

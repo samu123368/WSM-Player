@@ -402,4 +402,11 @@ void DiscChannel::EjectDisc()
 		testObj->Start();
 		SetState( St_FadeOutUnknown );
 	}
+	else
+	{
+		// The game banner replaced this layout after DiskIn faded its background
+		// away. Restore the complete themed no-disc pose before rendering again,
+		// rather than replaying the channel-opening animation from that state.
+		EnterNoDiscIdle();
+	}
 }
