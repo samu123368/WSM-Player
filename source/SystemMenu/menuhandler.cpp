@@ -2912,6 +2912,9 @@ void MenuHandler::StartingToReadDisc()
 
 void MenuHandler::DiscChannelAnimFinished()
 {
+	// A queued native insertion callback is no longer valid after ejection.
+	// In particular, DBSt_None must never become a phantom GameCube banner.
+	if( discBannerState != DBSt_Spinup ) return;
 	if( discBannerState == DBSt_Spinup && discChannelBanner )
 	{
 		discBannerState = DBSt_WiiBanner;

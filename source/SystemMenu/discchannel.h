@@ -68,9 +68,10 @@ protected:
 	Object *testObj;
 	Object *wiiDisc;
 	Object *gcDisc;
-	enum { BackgroundPaneCount = 7 };
+	enum { BackgroundPaneCount = 12 };
 	Pane *idleBackgroundPanes[ BackgroundPaneCount ];
 	u8 idleBackgroundAlpha[ BackgroundPaneCount ];
+	Vec2f idleBackgroundPosition[ BackgroundPaneCount ];
 	bool idleBackgroundLocked;
 	void CaptureNoDiscBackground();
 	void RestoreNoDiscBackground();

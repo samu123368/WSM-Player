@@ -37,6 +37,7 @@ DiscChannel::DiscChannel()
 	{
 		idleBackgroundPanes[i] = NULL;
 		idleBackgroundAlpha[i] = 0;
+		idleBackgroundPosition[i] = (Vec2f){0,0};
 	}
 }
 
@@ -187,7 +188,8 @@ void DiscChannel::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 	}
 
 	// DiskIn fades the backing pictures to zero. Do not let a stale/queued
-	// insertion track leave the no-disc screen exposing the black framebuffer.
+	// insertion track leave the no-disc screen exposing the black framebuffer
+	// or move its title strip/text away after the return initially looks correct.
 	if( state == St_Idle_Nodisc && idleBackgroundLocked ) RestoreNoDiscBackground();
 	layout->Render( modelview, ScreenProps, widescreen );
 	testObj->Advance();
@@ -211,7 +213,7 @@ void DiscChannel::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 	{
 		Finished();
 	}
-	else if( state == St_FadeOutUnknown && stateFrames > 220 )
+	else if( (state == St_FadeOutUnknown || state == St_EjectingDisc) && stateFrames > 220 )
 	{
 		BackgroundAnimDone();
 	}
@@ -302,16 +304,22 @@ void DiscChannel::EnterNoDiscIdle()
 
 void DiscChannel::CaptureNoDiscBackground()
 {
-	// Sample the native idle pose once, before any disc can fade it away. Keep
-	// theme-authored opacity and textures instead of painting a white rectangle.
+	// Sample the complete native idle chrome once, before an inserted disc can
+	// fade its text away or move N_Bar above the viewport. Keep theme-authored
+	// positions, opacity, localized labels and textures; do not paint substitutes.
 	const char *names[ BackgroundPaneCount ] = {
-		"RootPane", "Ban", "N_Back", "Back0", "BackMask1", "N_Disk", "BackMask2"
+		"RootPane", "Ban", "N_Back", "Back0", "BackMask1", "N_Disk", "BackMask2",
+		"N_Bar", "BarBase", "T_Bar", "T_Comment0", "T_Comment1"
 	};
 	for( u32 i = 0; i < BackgroundPaneCount; ++i )
 	{
 		idleBackgroundPanes[i] = layout->FindPane( names[i] );
 		if( idleBackgroundPanes[i] )
+		{
 			idleBackgroundAlpha[i] = idleBackgroundPanes[i]->GetAlpha();
+			idleBackgroundPosition[i] = (Vec2f){idleBackgroundPanes[i]->GetPosX(),
+				idleBackgroundPanes[i]->GetPosY()};
+		}
 	}
 }
 
@@ -319,7 +327,11 @@ void DiscChannel::RestoreNoDiscBackground()
 {
 	for( u32 i = 0; i < BackgroundPaneCount; ++i )
 		if( idleBackgroundPanes[i] )
+		{
 			idleBackgroundPanes[i]->SetAlpha( idleBackgroundAlpha[i] );
+			idleBackgroundPanes[i]->SetPosition( idleBackgroundPosition[i].x,
+				idleBackgroundPosition[i].y );
+		}
 }
 
 void DiscChannel::ShowNoDisc()
@@ -420,7 +432,7 @@ void DiscChannel::DiscIsUnknown()
 
 void DiscChannel::BackgroundAnimDone()
 {
-	if( state == St_FadeOutUnknown )
+	if( state == St_FadeOutUnknown || state == St_EjectingDisc )
 	{
 		EnterNoDiscIdle();
 	}
@@ -430,17 +442,22 @@ void DiscChannel::EjectDisc()
 {
 	if( state == St_DiscSpinLoop )
 	{
-		// stop spinning wii and GC disc
-		gcDisc->ScheduleAnimation( "my_DiskCh_a_DiskEnd", 0, -1, -1, false );
-		wiiDisc->ScheduleAnimation( "my_DiskCh_a_DiskEnd", 0, -1, -1, false );
+		// Replacing the looping animation is essential: a queued DiskEnd never
+		// runs behind DiskLoop, which has no Finished event. Finish the native
+		// spin-down and then restore the complete stable no-disc pose.
+		gcDisc->SetAnimation( "my_DiskCh_a_DiskEnd", 0, -1, -1, false );
+		gcDisc->Start();
+		wiiDisc->SetAnimation( "my_DiskCh_a_DiskEnd", 0, -1, -1, false );
+		wiiDisc->Start();
 
-		testObj->ScheduleAnimation( "my_DiskCh_a_UnknwnEject", 45, 200, -1, false ); // fade in text
+		testObj->SetAnimation( "my_DiskCh_a_UnknwnEject", 45, 200, -1, false ); // fade in text
 		testObj->Start();
-		SetState( St_Idle_Nodisc );
+		SetState( St_EjectingDisc );
 	}
 	else if( state == St_Unknown )
 	{
-		testObj->ScheduleAnimation( "my_DiskCh_a_UnknwnEject", 0, 200, -1, false ); // eject unknown disc
+		// UnknownLoop is also endless; replace it instead of queuing behind it.
+		testObj->SetAnimation( "my_DiskCh_a_UnknwnEject", 0, 200, -1, false ); // eject unknown disc
 		testObj->Start();
 		SetState( St_FadeOutUnknown );
 	}
