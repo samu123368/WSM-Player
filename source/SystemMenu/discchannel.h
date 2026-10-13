@@ -54,6 +54,8 @@ public:
 	void DiscIsGC();
 	void DiscIsUnknown();
 	void EjectDisc();
+	// A completed game banner may have bypassed this object's insertion state.
+	void ShowNoDisc();
 
 	// sent whenever either of the "insert disc" animations are completed
 	sigslot::signal0<> Finished;
@@ -66,6 +68,12 @@ protected:
 	Object *testObj;
 	Object *wiiDisc;
 	Object *gcDisc;
+	enum { BackgroundPaneCount = 7 };
+	Pane *idleBackgroundPanes[ BackgroundPaneCount ];
+	u8 idleBackgroundAlpha[ BackgroundPaneCount ];
+	bool idleBackgroundLocked;
+	void CaptureNoDiscBackground();
+	void RestoreNoDiscBackground();
 
 	enum State
 	{

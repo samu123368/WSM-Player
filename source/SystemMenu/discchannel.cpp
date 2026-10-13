@@ -32,6 +32,12 @@ DiscChannel::DiscChannel()
 	  gcDisc( new Object ),
 	  stateFrames( 0 )
 {
+	idleBackgroundLocked = false;
+	for( u32 i = 0; i < BackgroundPaneCount; ++i )
+	{
+		idleBackgroundPanes[i] = NULL;
+		idleBackgroundAlpha[i] = 0;
+	}
 }
 
 
@@ -152,6 +158,7 @@ bool DiscChannel::Load( const u8* diskBannAshData, u32 diskBannAshSize )
 	MOVEPANE( gcDisc, "GCDisk" );
 
 	EnterNoDiscIdle();
+	CaptureNoDiscBackground();
 
 	//gcDisc->Debug();
 	//wiiDisc->Debug();
@@ -179,6 +186,9 @@ void DiscChannel::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 		return;
 	}
 
+	// DiskIn fades the backing pictures to zero. Do not let a stale/queued
+	// insertion track leave the no-disc screen exposing the black framebuffer.
+	if( state == St_Idle_Nodisc && idleBackgroundLocked ) RestoreNoDiscBackground();
 	layout->Render( modelview, ScreenProps, widescreen );
 	testObj->Advance();
 	gcDisc->Advance();
@@ -209,6 +219,7 @@ void DiscChannel::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 
 void DiscChannel::JumpToUnknownDiscAnim()
 {
+	idleBackgroundLocked = false;
 	testObj->ClearAnimStack();
 	wiiDisc->ClearAnimStack();
 	gcDisc->ClearAnimStack();
@@ -227,6 +238,7 @@ void DiscChannel::JumpToUnknownDiscAnim()
 
 void DiscChannel::Reset()
 {
+	idleBackgroundLocked = false;
 	// Opening the channel must play its authored entrance. EnterNoDiscIdle
 	// deliberately holds the last frame for ejection/initial resource loading.
 	Object *objects[] = { testObj, wiiDisc, gcDisc };
@@ -244,6 +256,7 @@ void DiscChannel::StartReadingDisc()
 {
 	if( state == St_Idle_Nodisc )
 	{
+		idleBackgroundLocked = false;
 		// animate everything that isnt a disc to make the text fade out and stuff like that
 		testObj->ClearAnimStack();
 		testObj->SetAnimation( "my_DiskCh_a_DiskStart", 0, 50, 50, false );// fadeout text
@@ -283,6 +296,35 @@ void DiscChannel::EnterNoDiscIdle()
 	gcDisc->Pause( true );
 
 	SetState( St_Idle_Nodisc );
+	RestoreNoDiscBackground();
+	idleBackgroundLocked = true;
+}
+
+void DiscChannel::CaptureNoDiscBackground()
+{
+	// Sample the native idle pose once, before any disc can fade it away. Keep
+	// theme-authored opacity and textures instead of painting a white rectangle.
+	const char *names[ BackgroundPaneCount ] = {
+		"RootPane", "Ban", "N_Back", "Back0", "BackMask1", "N_Disk", "BackMask2"
+	};
+	for( u32 i = 0; i < BackgroundPaneCount; ++i )
+	{
+		idleBackgroundPanes[i] = layout->FindPane( names[i] );
+		if( idleBackgroundPanes[i] )
+			idleBackgroundAlpha[i] = idleBackgroundPanes[i]->GetAlpha();
+	}
+}
+
+void DiscChannel::RestoreNoDiscBackground()
+{
+	for( u32 i = 0; i < BackgroundPaneCount; ++i )
+		if( idleBackgroundPanes[i] )
+			idleBackgroundPanes[i]->SetAlpha( idleBackgroundAlpha[i] );
+}
+
+void DiscChannel::ShowNoDisc()
+{
+	EnterNoDiscIdle();
 }
 
 void DiscChannel::DiscIsWii()

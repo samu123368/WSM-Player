@@ -2829,10 +2829,16 @@ void MenuHandler::DiscEjected()
 		bigBannerLayout = NULL;
 		bigBannerObj = NULL;
 	}
-	// Restore even when hidden, so reopening cannot inherit DiskIn's transparent
-	// background or an unfinished insertion animation. Keep native spin/eject
-	// and unknown-disc ejection animations inside DiscChannel.
-	if( dcBanner ) dcBanner->EjectDisc();
+	if( dcBanner )
+	{
+		// The native object can still be in its old spin state when the game
+		// banner was loaded on the grid. Route using the menu's actual disc
+		// status, not that stale animation state, after a completed game banner.
+		if( discBannerState == DBSt_Spinup || discBannerState == DBSt_Unknown )
+			dcBanner->EjectDisc();
+		else
+			dcBanner->ShowNoDisc();
+	}
 
 	DELETE( discChannelBanner );
 	FREE( discChannelBannerData );
