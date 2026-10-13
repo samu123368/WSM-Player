@@ -53,7 +53,7 @@ void WiredUsbMouse::PrepareFrontend() {
 }
 bool WiredUsbMouse::Init() {
     if(initialized) return true;
-    Log("=== USB diagnostics v1.2 R10 mouse-only session %lu ===",(unsigned long)time(NULL));
+    Log("=== USB diagnostics v1.2 R11 failed-watch recovery session %lu ===",(unsigned long)time(NULL));
     Log("Probe values are decimal; interface class=3 HID, subclass=1 boot, protocol=2 mouse.");
     Log("Host watch: class 0=HID, 1=other USB. Subscription success is not device enumeration success.");
     Log("WSM USB: mouse-only; keyboard scanning disabled; IOS %d revision %d",
@@ -84,6 +84,7 @@ void WiredUsbMouse::Shutdown() {
 void WiredUsbMouse::Update(bool allowBackgroundWork, bool acceptInput) {
     if(!initialized) return;
     if(allowBackgroundWork) {
+        WSM_UsbTraceRecoverDeviceWatch();
         char line[144];
         for(unsigned i=0;i<8 && WSM_UsbTraceDiagnostic(line,sizeof(line));++i)Log("%s",line);
         for(unsigned i=0;i<16 && WSM_MouseDiagnostic(line,sizeof(line));++i)Log("%s",line);
