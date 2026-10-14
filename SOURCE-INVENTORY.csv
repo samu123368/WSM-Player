@@ -156,13 +156,13 @@ source/SystemMenu/wiihtmlcontent.cpp,9436,feec0e3453b5057e746ae887bf49be7eb4cbd4
 source/SystemMenu/wiihtmlcontent.h,881,1c307834ec11a504221e689404ccf9c0e266e46a158ac7cd9faa0423f2986e10,Manual provenance review; no recognized notice in file
 source/SystemMenu/wiiremoteinput.cpp,2104,79b7c165d096816fdb5807c8c27320f03ff37f5bc678920c55e47dd619aebcd3,Manual provenance review; no recognized notice in file
 source/SystemMenu/wiiremoteinput.h,453,1021305b94ca4f384fc657a357467e3408ba1333460ddaec1db9c3d40fca6aa3,Manual provenance review; no recognized notice in file
-source/SystemMenu/wiredusbmouse.cpp,6810,f592e40e0a09eebfbfa18f75107866e809f54f96436c7493e48a3575815d3e7e,Manual provenance review; no recognized notice in file
+source/SystemMenu/wiredusbmouse.cpp,7327,363263e850f39207121c1297163b93a6fcb98fa70b7cffcd257362376e055b6c,Manual provenance review; no recognized notice in file
 source/SystemMenu/wiredusbmouse.h,1241,18c08c46064a20029436059ccc6703c3d4ae1f77535249602e93a61f2fd48174,Manual provenance review; no recognized notice in file
 source/SystemMenu/wsm_libogc_usbmouse.c,19773,d3eb6a71290ac43ffb3a31eca5db9de27df0a2f008908eb6c808fc96f4945f5c,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/wsm_receiver_mouse.h,946,512cb493a71462403a34056cef739eedf42ef291854af7fb21e9f5efc5c37d2e,Manual provenance review; no recognized notice in file
 source/SystemMenu/wsm_usbmouse_status.h,1105,180e8b3006350da77dc42706991000e346acc03ce0d9129090a198dc31a21ea8,Manual provenance review; no recognized notice in file
-source/SystemMenu/wsm_usbtrace.c,7781,047588b76e0a444f0a00c492597e6c0e6ce8d92e8d7ab377406b96ea69b1834b,Manual provenance review; no recognized notice in file
-source/SystemMenu/wsm_usbtrace.h,511,c60ef1c5208e698c97a31eb3452ffedd3a6e96346e2c7ea153f99878317322b8,Manual provenance review; no recognized notice in file
+source/SystemMenu/wsm_usbtrace.c,4854,449538e81532b049b2dd520412524224969eb464a28c9365a9503dc9d039c39c,Manual provenance review; no recognized notice in file
+source/SystemMenu/wsm_usbtrace.h,316,d64ca3407b9688ecc31795a3d3fbc1646a1495b32d61dde9997ee75afd178df0,Manual provenance review; no recognized notice in file
 source/Textbox.cpp,15815,6805e3ab542ef1aec44e1f6e3e936fd3b81e2c546310e691dd97250bd3794546,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Textbox.h,4556,91472e11b7110a89f3901d8942ae37b0edca2b3b5644d7d84fd9499622c05bee,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Texture.cpp,8008,d9f66f8a4a0c331474dba5100a0dcad7ddbefbda3bd9573a6901b47ff224dfe9,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -260,7 +260,7 @@ source/video.cpp,17070,c0df9fc03246aa869103a971992e17c63dd3a45aede4a88e80c3ca897
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,0d676aad61a6ed6752454efd7d7f0f07ecbf81e67725669e746fe2f1a2caf3d2,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,377b78b0b018e6cba5bb457a28aed37e7633d1439fe0cbf5e9dcc5d89fbf8d8e,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

@@ -1,6 +1,7 @@
 #include "wiredusbmouse.h"
 #include "wsm_usbmouse_status.h"
 #include "wsm_usbtrace.h"
+#include "recovery.h"
 #include <ogc/ios.h>
 #include <ogc/usbmouse.h>
 #include <wiikeyboard/keyboard.h>
@@ -53,7 +54,7 @@ void WiredUsbMouse::PrepareFrontend() {
 }
 bool WiredUsbMouse::Init() {
     if(initialized) return true;
-    Log("=== USB diagnostics v1.2 R11 failed-watch recovery session %lu ===",(unsigned long)time(NULL));
+    Log("=== USB diagnostics v1.2 R12 passive startup stages session %lu ===",(unsigned long)time(NULL));
     Log("Probe values are decimal; interface class=3 HID, subclass=1 boot, protocol=2 mouse.");
     Log("Host watch: class 0=HID, 1=other USB. Subscription success is not device enumeration success.");
     Log("WSM USB: mouse-only; keyboard scanning disabled; IOS %d revision %d",
@@ -62,15 +63,21 @@ bool WiredUsbMouse::Init() {
     for(unsigned i=0;i<16 && WSM_UsbTraceDiagnostic(startup,sizeof(startup));++i)
         Log("%s",startup);
     if(!mouseStarted) {
+        Log("USB stage: before MOUSE_Init; automatic SDK watch replay disabled");
+        Recovery::SetCheckpoint(0x134,"writing USB startup diagnostics");
+        FlushLog(); // Preserve the session/SDK trace even if initialization blocks.
+        Recovery::SetCheckpoint(0x135,"starting libogc mouse input");
         const s32 result=MOUSE_Init(); mouseStarted=result>=0;
         Log("MOUSE_Init: %d",result);
     }
     // Mouse-only mode: libwiikeyboard probes and closes non-keyboard handles,
     // including mice already owned by our worker. Keep it entirely unstarted.
     // Text entry remains available through the pointer-operated keyboard.
+    Recovery::SetCheckpoint(0x136,"clearing USB startup event queues");
     if(mouseStarted) MOUSE_FlushEvents();
     if(keyboardStarted) KEYBOARD_FlushEvents();
     initialized=mouseStarted || keyboardStarted;
+    Recovery::SetCheckpoint(0x137,"writing completed USB startup diagnostics");
     FlushLog();
     return initialized;
 }
@@ -84,10 +91,10 @@ void WiredUsbMouse::Shutdown() {
 void WiredUsbMouse::Update(bool allowBackgroundWork, bool acceptInput) {
     if(!initialized) return;
     if(allowBackgroundWork) {
-        WSM_UsbTraceRecoverDeviceWatch();
         char line[144];
         for(unsigned i=0;i<8 && WSM_UsbTraceDiagnostic(line,sizeof(line));++i)Log("%s",line);
         for(unsigned i=0;i<16 && WSM_MouseDiagnostic(line,sizeof(line));++i)Log("%s",line);
+        Recovery::SetCheckpoint(0x138,"flushing USB input diagnostics");
         FlushLog();
     }
     connected=false;
