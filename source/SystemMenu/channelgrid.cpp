@@ -1021,12 +1021,12 @@ void ChannelGrid::HandlePageInput()
 		// check for button presses
 		for(int i = 0; i < 4; i++ )
 		{
-			if( Pad( i ).pPlus() )
+			if( Pad( i ).rPlus() )
 			{
 				RequestShiftLeft();
 				break;
 			}
-			if( Pad( i ).pMinus() )
+			if( Pad( i ).rMinus() )
 			{
 				RequestShiftRight();
 				break;
@@ -1053,13 +1053,13 @@ void ChannelGrid::HandleUserInput()
 		{
 			// Plus/minus provide an exact cross-page option while holding the
 			// channel. Lingering at either screen edge also turns the page.
-			if( controller.pPlus() && pageNo < pageCnt - 1 )
+			if( controller.rPlus() && pageNo < pageCnt - 1 )
 			{
 				RequestShiftLeft();
 				dragEdgeFrames = 0;
 				dragEdgeDirection = 0;
 			}
-			else if( controller.pMinus() && pageNo > 0 )
+			else if( controller.rMinus() && pageNo > 0 )
 			{
 				RequestShiftRight();
 				dragEdgeFrames = 0;

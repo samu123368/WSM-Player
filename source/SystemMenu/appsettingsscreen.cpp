@@ -3186,8 +3186,8 @@ void AppSettingsScreen::UpdateInput( const Vec2f &screen )
 			Controller &pad=Pad(i); if(pad.IsTaken())continue;
 			const WPADData &data=pad.GetData();
 			if(pad.pB()){HandleBack();pad.Take();return;}
-			if(pad.pUp()||pad.pMinus()||pad.UsbMouseWheel()>0)--firstVisibleRow;
-			if(pad.pDown()||pad.pPlus()||pad.UsbMouseWheel()<0)++firstVisibleRow;
+			if(pad.pUp()||pad.rMinus()||pad.UsbMouseWheel()>0)--firstVisibleRow;
+			if(pad.pDown()||pad.rPlus()||pad.UsbMouseWheel()<0)++firstVisibleRow;
 			const float x=data.ir.x/SX(screen),y=data.ir.y/SY(screen);
 			if(data.ir.valid && pad.pA()) {
 				if((!agreementViewer || !agreementViewer->Count()) && CloseRect(screen).Contains(data.ir.x,data.ir.y)) {HandleBack();pad.Take();return;}
@@ -3635,12 +3635,12 @@ void AppSettingsScreen::UpdateInput( const Vec2f &screen )
 			}
 		}
 
-		if( page == PageSystemSettings && ( pad.pMinus() || pad.pPlus() ) )
+		if( page == PageSystemSettings && ( pad.rMinus() || pad.rPlus() ) )
 		{
 			// Match the Wii Settings' page controls: - walks toward the visible
 			// left/up page and + walks toward the visible right/down page.  This
 			// covers the three main pages and the multi-page country/rating lists.
-			const bool forward = pad.pPlus();
+			const bool forward = pad.rPlus();
 			const std::string &link = forward
 				? ( !systemSettingsRightLink.empty()
 					? systemSettingsRightLink : systemSettingsDownLink )

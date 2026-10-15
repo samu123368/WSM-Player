@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstring>
+#include <ogc/lwp_watchdog.h>
 
 #include "Inputs.h"
 #include "recovery.h"
@@ -22,7 +23,7 @@ Controller::Controller( int controllerChannel )
 	  usb_mouse_wheel( 0 ),
 	  wpadConnected( false ), padConnected( false ),
 	  usbMouseConnected( false ), usbKeyboardConnected( false ), taken( false ),
-	  nunchukPointerActive( false )
+	  nunchukPointerActive( false ), pageRepeatDirection( 0 )
 {
 	memset( &wpad, 0, sizeof( wpad ) );
 	wpad.err = WPAD_ERR_NO_CONTROLLER;
@@ -48,6 +49,8 @@ void Controller::Update( int physicalChannel, bool gcConnected )
 		pad_btns_d = 0;
 		pad_btns_h = 0;
 		nunchukPointerActive = false;
+		pageRepeat.Update( false, false, 0 );
+		pageRepeatDirection = 0;
 		return;
 	}
 
@@ -61,6 +64,8 @@ void Controller::Update( int physicalChannel, bool gcConnected )
 	// touching the channel buffer unless PAD_ScanPads marked it present.
 	pad_btns_d = gcConnected ? PAD_ButtonsDown( chan ) : 0;
 	pad_btns_h = gcConnected ? PAD_ButtonsHeld( chan ) : 0;
+	pageRepeatDirection = pageRepeat.Update( hPlus(), hMinus(),
+		ticks_to_millisecs( gettime() ) );
 
 	if( wpad.ir.valid )
 	{
@@ -172,6 +177,7 @@ void Controller::SuppressUiInput()
 
 void Controller::ClearButtonsDown()
 {
+	pageRepeatDirection = 0;
 	pad_btns_d = 0;
 	wpad.btns_d = 0;
 	usb_mouse_btns_d = 0;

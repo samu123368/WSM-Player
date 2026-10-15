@@ -939,12 +939,12 @@ void ChannelEdit::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 		// read input and check for l/r/-/+
 		for(int i = 0; i < 4; i++ )
 		{
-			if( Pad( i ).pPlus() )
+			if( Pad( i ).rPlus() )
 			{
 				MaybeShiftToNextPage();
 				break;
 			}
-			if( Pad( i ).pMinus() )
+			if( Pad( i ).rMinus() )
 			{
 				MaybeShiftToPrevPage();
 				break;

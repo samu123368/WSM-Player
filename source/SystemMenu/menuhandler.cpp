@@ -1456,13 +1456,13 @@ void MenuHandler::DoGrid()
 		else if( state == St_NativeChannel && nativeChannelView )
 		{
 			if( primaryController >= 0 && ( Pad( primaryController ).pLeft()
-				|| Pad( primaryController ).pMinus() ) )
+				|| Pad( primaryController ).rMinus() ) )
 			{
 				nativeChannelView->PreviousPage();
 				CInputs::Instance()->ClearButtonsDown();
 			}
 			else if( primaryController >= 0 && ( Pad( primaryController ).pRight()
-				|| Pad( primaryController ).pPlus() ) )
+				|| Pad( primaryController ).rPlus() ) )
 			{
 				nativeChannelView->NextPage();
 				CInputs::Instance()->ClearButtonsDown();
@@ -1704,11 +1704,11 @@ void MenuHandler::DoGrid()
 				// respond to user input
 				for( int i = 0; i < 4; i++ )
 				{
-					if( Pad( i ).pMinus() )
+					if( Pad( i ).rMinus() )
 					{
 						LeftArrowBtnClicked();
 					}
-					else if( Pad( i ).pPlus() )
+					else if( Pad( i ).rPlus() )
 					{
 						RightArrowBtnClicked();
 					}

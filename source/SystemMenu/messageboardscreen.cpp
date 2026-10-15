@@ -352,12 +352,12 @@ void MessageBoardScreen::Update( const Vec2f &screen )
 		if( page == PageLandingPrevious || page == PageLanding
 			|| page == PageLandingNext )
 		{
-			if( controller.pLeft() || controller.pMinus() )
+			if( controller.pLeft() || controller.rMinus() )
 			{
 				ChangeDay(-1);
 				return;
 			}
-			if( controller.pRight() || controller.pPlus() )
+			if( controller.pRight() || controller.rPlus() )
 			{
 				ChangeDay(1);
 				return;
@@ -365,9 +365,9 @@ void MessageBoardScreen::Update( const Vec2f &screen )
 		}
 		if( page == PageCalendar )
 		{
-			if( controller.pLeft() || controller.pMinus() )
+			if( controller.pLeft() || controller.rMinus() )
 			{ monthOffset = std::max(-1200,monthOffset - 1); return; }
-			if( controller.pRight() || controller.pPlus() )
+			if( controller.pRight() || controller.rPlus() )
 			{ monthOffset = std::min(1200,monthOffset + 1); return; }
 		}
 		if( !controller.pA() ) continue;

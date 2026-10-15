@@ -5,6 +5,7 @@
 #include <ogc/lwp.h>
 #include <wiiuse/wpad.h>
 #include "wiredusbmouse.h"
+#include "pagebuttonrepeat.h"
 
 #define MAX_CONTROLS 4
 
@@ -22,6 +23,8 @@ private:
 	bool wpadConnected, padConnected, usbMouseConnected,
 		usbKeyboardConnected, taken;
 	bool nunchukPointerActive;
+	PageButtonRepeat pageRepeat;
+	int pageRepeatDirection;
 	bool pButton( u32 pad, u32 remote ) const
 		{ return ( pad_btns_d & pad ) || ( wpad.btns_d & remote )
 			|| ( usb_mouse_btns_d & remote )
@@ -55,6 +58,8 @@ public:
 	bool pB() const { return pButton( PAD_BUTTON_B, WPAD_BUTTON_B | WPAD_CLASSIC_BUTTON_B ); }
 	bool pPlus() const { return pButton( PAD_TRIGGER_R, WPAD_BUTTON_PLUS | WPAD_CLASSIC_BUTTON_PLUS ); }
 	bool pMinus() const { return pButton( PAD_TRIGGER_L, WPAD_BUTTON_MINUS | WPAD_CLASSIC_BUTTON_MINUS ); }
+	bool rPlus() const { return pPlus() || pageRepeatDirection > 0; }
+	bool rMinus() const { return pMinus() || pageRepeatDirection < 0; }
 	bool pHome() const { return pButton( PAD_BUTTON_START, WPAD_BUTTON_HOME | WPAD_CLASSIC_BUTTON_HOME ); }
 	bool pOne() const { return pButton( 0, WPAD_BUTTON_1 ); }
 	bool pTwo() const { return pButton( 0, WPAD_BUTTON_2 ); }
