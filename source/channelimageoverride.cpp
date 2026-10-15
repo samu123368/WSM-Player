@@ -272,9 +272,8 @@ namespace
 		const double drawnWidth = orientedWidth * scale;
 		const double drawnHeight = orientedHeight * scale;
 		const double left = ( displayWidth - drawnWidth ) * 0.5;
-		// Full-bleed Photo banners preserve the top of portrait and 4:3 photos.
-		// Cover-cropping still removes any unused canvas, but the important upper
-		// portion no longer disappears above the banner viewport.
+		// Photo banners use ordinary centered cover. Keep optional top alignment
+		// available to callers which explicitly need it; it never changes scale.
 		const double top = alignTop && drawnHeight > displayHeight
 			? 0.0 : ( displayHeight - drawnHeight ) * 0.5;
 		// Horizontal sampling is identical on every row. Avoid hundreds of
@@ -473,16 +472,14 @@ bool ChannelImageOverride::PhotoBannerContentBounds( Layout *layout,
 	Pane *band = layout ? layout->FindPane( "belt_c" ) : NULL;
 	if( !band ) return false;
 	width = layout->GetWidth();
-	// Slight vertical overscan covers the authored banner aperture more fully.
-	// Use the same bounds for cover-crop decoding AND the displayed pane, so
-	// this enlarges the photo without stretching its source aspect ratio.
-	const float nativeHeight = layout->GetHeight();
-	height = std::min(nativeHeight * 1.05f, 1024.0f);
+	// Cover the actual aperture with the original image proportions. The
+	// sampler uses ONE max(width/sourceWidth, height/sourceHeight) scale;
+	// don't change the target's height independently or add arbitrary overscan.
+	height = layout->GetHeight();
 	centerY = 0.0f;
 	return std::isfinite( width ) && std::isfinite( height )
 		&& std::isfinite( centerY ) && width > 0.0f && width <= 1024.0f
-		&& std::isfinite(nativeHeight) && nativeHeight > 0.0f
-		&& height >= nativeHeight
+		&& height > 0.0f
 		&& height <= 1024.0f;
 }
 
@@ -655,9 +652,7 @@ bool ChannelImageOverride::Apply( Layout *layout, Target target,
 	}
 
 	gdImagePtr canvas = ScaleAndOrient( source, info.orientation,
-		textureWidth, textureHeight, fitMode,
-		target == ChannelImageOverride::PhotoBanner
-			&& fitMode == ChannelPreview::Fill,
+		textureWidth, textureHeight, fitMode, false,
 		target == PhotoBanner || target == ForecastImage ? paneWidth : 0.0,
 		target == PhotoBanner || target == ForecastImage ? paneHeight : 0.0,
 		target == ForecastImage );

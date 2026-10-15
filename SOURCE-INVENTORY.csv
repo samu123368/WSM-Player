@@ -174,8 +174,8 @@ source/Window.cpp,12355,f49b0287d5019e3ee139882c8141d6794189daeed4efba4ab7bc6b28
 source/Window.h,2247,0502465d2df7695cfd4fd51bdf5d0a233930b36f5f40c4219c8956198078bcac,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/animation.cpp,14190,c0fc13f4e8ed28c7af0cbaa327f0cc95580cee08d669e322915dc59dd2a29df7,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/animation.h,3697,72e58d3fb6632fa4fed309fb3c68aba39aef08c5cf891ec384da289b706158d9,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/channelimageoverride.cpp,32058,3a4885e026d5573da85af3320d011dd49d04ca486e00aca34d175d359feadea0,Manual provenance review; no recognized notice in file
-source/channelimageoverride.h,2522,4bd475fa9aa0ed1505346e6616420d51286f28589237d3a6c00c4e09aed5fcaa,Manual provenance review; no recognized notice in file
+source/channelimageoverride.cpp,31782,5df651d5b992e2680422b29cc060a0cdb77cd42e7e16eec3e64c6bb33efd145f,Manual provenance review; no recognized notice in file
+source/channelimageoverride.h,2528,02bd0b52e04c62e89f27341a3aefdac74b2167fd790baaf55a46d3c6bcf58f3f,Manual provenance review; no recognized notice in file
 source/channelpreviewconfig.cpp,15097,29f0abcc620351faed0c3fbccfd29dd900f2554a05f97c5c6f220ff049c24bca,Manual provenance review; no recognized notice in file
 source/channelpreviewconfig.h,5572,75fbc3aa43b0c73d8098646f505bc3c1ca61b49e27c6534e3213068f03f2c027,Manual provenance review; no recognized notice in file
 source/data/fake_forecast.bin,512,493eb023fc17143a15468a73d99247640ac93659ff522fad308e8ac495329b2f,Allowlisted original/Noto-derived asset; recorded separately
@@ -261,7 +261,7 @@ source/video.cpp,17070,c0df9fc03246aa869103a971992e17c63dd3a45aede4a88e80c3ca897
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,d3b7902c3815e73596ba5d2303dcc6aa49218ca19bbaf3941346e0cd11ce39bd,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,45c37a725c35553819fbccb6f93d2b7038a594634bb4284eb470fd27c95b833f,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file
