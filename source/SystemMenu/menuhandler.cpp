@@ -28,6 +28,7 @@ distribution.
 #include <unistd.h>
 #include <asndlib.h>
 #include <cmath>
+#include <ogc/lwp_watchdog.h>
 
 #include "gecko.h"
 #include "channelpreviewconfig.h"
@@ -297,6 +298,7 @@ MenuHandler::MenuHandler()
 	  launchErrorFrames( 0 ),
 	  launchFadeFrame( 0 ),
 	  bannerSwitchDirection( 0 ),
+	  bannerScrollReadyAt( 0 ),
 	  homeMenuActive( false ),
 	  freeCameraSettingSeen( false ),
 	  freeCameraController( -1 ),
@@ -746,6 +748,7 @@ void MenuHandler::ChannelIconClicked( u8 row, u8 col, int index )
 		gprintf( "index >= bannerlist.size()\n" );
 		return;
 	}
+	bannerScrollReadyAt = 0;
 
 	// TODO: clean this shit up
 	// reset animation step for zooming
@@ -956,9 +959,10 @@ void MenuHandler::LeftArrowBtnClicked()
 	break;
 	case St_BigBanner:
 	{
-		if( !bannerSwitchDirection )
+		if( !bannerSwitchDirection && ticks_to_millisecs(gettime()) >= bannerScrollReadyAt )
 		{
 			bannerSwitchDirection = -1;
+			bannerScrollReadyAt = ticks_to_millisecs(gettime()) + 500;
 			StopBannerSound();
 		}
 	}
@@ -980,9 +984,10 @@ void MenuHandler::RightArrowBtnClicked()
 	break;
 	case St_BigBanner:
 	{
-		if( !bannerSwitchDirection )
+		if( !bannerSwitchDirection && ticks_to_millisecs(gettime()) >= bannerScrollReadyAt )
 		{
 			bannerSwitchDirection = 1;
+			bannerScrollReadyAt = ticks_to_millisecs(gettime()) + 500;
 			StopBannerSound();
 		}
 	}
@@ -1646,7 +1651,7 @@ void MenuHandler::DoGrid()
                             break;
                         case DBSt_WiiBanner:
 							if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
-							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
+							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, 255 );
                             selectedBanner->AdvanceBanner();
                             break;
                         }
@@ -1654,10 +1659,14 @@ void MenuHandler::DoGrid()
                     else
                     {
 						if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
-						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
+						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, 255 );
                         selectedBanner->AdvanceBanner();
                     }
-                    frame->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha, false );
+                    frame->Render( GXmodelView2D, ScreenProps, widescreen, 255, false );
+                    // Fade the opaque stack from black, not every overlapping
+                    // pane independently: translucent backplates expose internals.
+                    DrawSquare(0, 0, ScreenProps.x, ScreenProps.y,
+                        (GXColor){0, 0, 0, (u8)(255 - BannerAlpha)});
                 }
                 // revert scissor and projection
                 Pane::ResetRenderClip();
@@ -1695,6 +1704,8 @@ void MenuHandler::DoGrid()
 				GX_DrawDone();
 				MoveBannerSelection( bannerSwitchDirection );
 				bannerSwitchDirection = 0;
+				// Count from the completed load, so slow SD reads cannot eat the gap.
+				bannerScrollReadyAt = ticks_to_millisecs(gettime()) + 500;
 				frame->ResetButtons();
 				StartBannerSound();
 			}
@@ -1704,11 +1715,11 @@ void MenuHandler::DoGrid()
 				// respond to user input
 				for( int i = 0; i < 4; i++ )
 				{
-					if( Pad( i ).rMinus() )
+					if( Pad( i ).rMinus() || Pad( i ).hMinus() )
 					{
 						LeftArrowBtnClicked();
 					}
-					else if( Pad( i ).rPlus() )
+					else if( Pad( i ).rPlus() || Pad( i ).hPlus() )
 					{
 						RightArrowBtnClicked();
 					}
@@ -1849,7 +1860,7 @@ void MenuHandler::DoGrid()
                             break;
                         case DBSt_WiiBanner:
 							if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
-							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
+							bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, 255 );
                             selectedBanner->AdvanceBanner();
                             break;
                         }
@@ -1857,10 +1868,12 @@ void MenuHandler::DoGrid()
                     else
                     {
 						if( selectedBanner ) selectedBanner->PrepareBannerFrame(false);
-						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha );
+						bigBannerLayout->Render( GXmodelView2D, ScreenProps, widescreen, 255 );
                         selectedBanner->AdvanceBanner();
                     }
-                    frame->Render( GXmodelView2D, ScreenProps, widescreen, BannerAlpha, false );
+                    frame->Render( GXmodelView2D, ScreenProps, widescreen, 255, false );
+                    DrawSquare(0, 0, ScreenProps.x, ScreenProps.y,
+                        (GXColor){0, 0, 0, (u8)(255 - BannerAlpha)});
                 }
                 // revert scissor and projection
                 Pane::ResetRenderClip();

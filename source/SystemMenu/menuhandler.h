@@ -188,6 +188,7 @@ private:
 	int launchErrorFrames;
 	int launchFadeFrame;
 	int bannerSwitchDirection;
+	u64 bannerScrollReadyAt;
 
 	// loop and process different menus
 	void DoHealthScreen();

@@ -47,6 +47,7 @@ public:
 	void Reset();
 
 	bool Ready() const { return ready; }
+	bool HasCachedPhotoTexture() const { return texture && !cachedPhotoPath.empty(); }
 	Texture *GetTexture() const { return ready ? texture : NULL; }
 	static bool ValidForecastDimensions( unsigned int width, unsigned int height,
 		unsigned int orientation = 1 );
@@ -61,6 +62,10 @@ private:
 	unsigned char *textureData;
 	bool ready;
 	std::string lastError;
+	std::string cachedPhotoPath;
+	long long cachedPhotoSize, cachedPhotoTime;
+	int cachedPhotoWidth, cachedPhotoHeight;
+	ChannelPreview::FitMode cachedPhotoFit;
 };
 
 #endif // CHANNEL_IMAGE_OVERRIDE_H

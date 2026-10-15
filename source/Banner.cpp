@@ -1148,7 +1148,7 @@ namespace
 				return false;
 			// The photo is a full-bleed background, including behind the header.
 			// Leaving out the region above belt_c produces an uncovered top strip.
-			SetNamedPaneVisible( layout, "cork", false );
+			SetNamedPaneVisible( layout, "cork", true );
 			SetNamedPaneVisible( layout, "photo", false );
 			SetNamedPaneVisible( layout, "belt_a", false );
 			SetNamedPaneVisible( layout, "belt_c", true );
@@ -2185,6 +2185,9 @@ Banner::Banner( const u8 *data, u32 len )
 	, layout_icon(NULL)
 	, titleId(0)
 	, hasInsertedPhotoImage(false)
+	, insertedPhotoPane(NULL)
+	, photoCorkPane(NULL)
+	, photoBannerWidth(0.0f), photoBannerHeight(0.0f)
 	, bannerCustomImageAttempted(false)
 	, iconCustomImageAttempted(false)
 	, appliedWiiFitIconProfile(-1)
@@ -2397,6 +2400,13 @@ Object *Banner::LoadBanner()
 		if( !hasInsertedPhotoImage && !preview.photo.imagePath.empty() )
 			gprintf( "Photo banner image skipped: %s\n",
 				bannerImageOverride.LastError().c_str() );
+		if( hasInsertedPhotoImage )
+		{
+			insertedPhotoPane = dynamic_cast<Picture *>(layout_banner->FindPane("pic_photo"));
+			photoCorkPane = layout_banner->FindPane("cork");
+			photoBannerWidth = layout_banner->GetWidth();
+			photoBannerHeight = layout_banner->GetHeight();
+		}
 	}
 	// create object
 	bannerObj = new Object;
@@ -2475,9 +2485,8 @@ Object *Banner::LoadBanner()
 		if( photoInsertedImageLayout && hasInsertedPhotoImage
 			&& brlanName == "banner_Rso1" )
 		{
-			// Rso1's frames 0..39 fade the inserted image from alpha zero. Begin
-			// at its first fully opaque frame and loop only that stable range, so
-			// neither the removed backing nor the old slideshow can flash through.
+			// Keep native chrome on its stable pose. The photo has a separate
+			// post-zoom reveal clock, so loading/zoom frames cannot consume its fade.
 			const float end = anim->FrameCount() - 1.0f;
 			bannerObj->ScheduleAnimation( brlanName, 40.0f, end, -1.0f, true );
 		}
@@ -2643,14 +2652,28 @@ void Banner::ApplyGeneratedChannelText()
 {
 	if( !layout_banner )
 		return;
-	if( hasInsertedPhotoImage && layout_banner->FindPane( "pic_photo" )
-		&& layout_banner->FindPane( "belt_c" ) )
+	if( hasInsertedPhotoImage && insertedPhotoPane )
 	{
-		// Rso1 contains visibility/alpha keys for the original inserted-photo
-		// presentation.  MenuHandler calls this after animation advancement and
-		// before every render, so the full-bleed image and authored header remain
-		// visible for the complete loop instead of disappearing on a later key.
-		ConfigurePhotoImageLayout( layout_banner, true );
+		// No tree searches, bounds recalculation or sibling reordering per frame.
+		// Restore only the animated photo properties using cached native panes.
+		insertedPhotoPane->SetPosition(0.0f, 0.0f);
+		insertedPhotoPane->SetSize(photoBannerWidth, photoBannerHeight);
+		const Vec2f scale = {1.0f, 1.0f};
+		insertedPhotoPane->SetScale(scale);
+		insertedPhotoPane->SetRotate(0.0f);
+		insertedPhotoPane->SetOrigin(4);
+		insertedPhotoPane->SetWidescreen(false);
+		insertedPhotoPane->SetVisible(true);
+		insertedPhotoPane->SetHide(false);
+		insertedPhotoPane->SetAlpha(
+			BannerInformationAlpha(bannerInfoFrames, bannerInfoDelayFrames / 4, 16));
+		if(photoCorkPane)
+		{
+			photoCorkPane->SetVisible(true);
+			photoCorkPane->SetHide(false);
+			photoCorkPane->SetAlpha(255);
+		}
+		return;
 	}
 	if( IsMarioKartBannerLayout( layout_banner ) )
 	{
@@ -3538,7 +3561,11 @@ void Banner::UnloadBanner()
 	marioKartCarouselStarted = false;
 	DELETE( bannerObj );
 	DELETE( layout_banner );
-	bannerImageOverride.Reset();
+	insertedPhotoPane = NULL;
+	photoCorkPane = NULL;
+	// Retain one bounded decoded photo while this Banner is cached by the grid.
+	// Reopening it can rebind the texture without repeating JPEG/PNG decoding.
+	if( !bannerImageOverride.HasCachedPhotoTexture() ) bannerImageOverride.Reset();
 	FREE( banner_bin );
 	std::map< std::string, Animation *>:: iterator it = bannerBrlans.begin(), itE = bannerBrlans.end();
 	while( it != itE )
@@ -3547,8 +3574,8 @@ void Banner::UnloadBanner()
 		++it;
 	}
 	bannerBrlans.clear();
-	// The inserted-image texture is owned outside this renderer. Never carry a
-	// successful state into a later banner instance after that texture is gone.
+	// Presentation pointers never outlive the layout. The bounded owned photo
+	// cache is rebound and file-stamp checked when another layout is loaded.
 	hasInsertedPhotoImage = false;
 	// Icon textboxes can point into generatedText while the large banner is
 	// unloaded.  Keep the stable backing store alive until this Banner dies.

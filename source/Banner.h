@@ -31,6 +31,8 @@ distribution.
 #include "channelpreviewconfig.h"
 #include "utils/U8Archive.h"
 
+class Picture;
+
 class Banner
 {
 public:
@@ -114,6 +116,9 @@ protected:
 	Layout *layout_banner, *layout_icon;
 	u64 titleId;
 	bool hasInsertedPhotoImage;
+	Picture *insertedPhotoPane;
+	Pane *photoCorkPane;
+	float photoBannerWidth, photoBannerHeight;
 	bool bannerCustomImageAttempted;
 	bool iconCustomImageAttempted;
 	int appliedWiiFitIconProfile;

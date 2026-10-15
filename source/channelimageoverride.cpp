@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <malloc.h>
+#include <sys/stat.h>
+#include <vector>
 
 #include <gd.h>
 #include <ogc/isfs.h>
@@ -275,6 +277,18 @@ namespace
 		// portion no longer disappears above the banner viewport.
 		const double top = alignTop && drawnHeight > displayHeight
 			? 0.0 : ( displayHeight - drawnHeight ) * 0.5;
+		// Horizontal sampling is identical on every row. Avoid hundreds of
+		// thousands of repeated double divisions on the Wii CPU per photo.
+		std::vector<int> sourceColumns(destinationWidth, -1);
+		for(int x = 0; x < destinationWidth; ++x)
+		{
+			const double displayX = (x + 0.5) * displayWidth / destinationWidth;
+			if(fitMode != ChannelPreview::Fill
+				&& (displayX < left || displayX >= left + drawnWidth)) continue;
+			const double orientedXFloat = (displayX - left) / scale - 0.5;
+			sourceColumns[x] = std::min(orientedWidth - 1,
+				std::max(0, (int)(orientedXFloat + 0.5)));
+		}
 
 		for( int y = 0; y < destinationHeight; ++y )
 		{
@@ -289,13 +303,8 @@ namespace
 				std::max( 0, (int)( orientedYFloat + 0.5 ) ) );
 			for( int x = 0; x < destinationWidth; ++x )
 			{
-				const double displayX = ( x + 0.5 ) * displayWidth / destinationWidth;
-				const double orientedXFloat = ( displayX - left ) / scale - 0.5;
-				if( fitMode != ChannelPreview::Fill
-					&& ( displayX < left || displayX >= left + drawnWidth ) )
-					continue;
-				const int orientedX = std::min( orientedWidth - 1,
-					std::max( 0, (int)( orientedXFloat + 0.5 ) ) );
+				const int orientedX = sourceColumns[x];
+				if(orientedX < 0) continue;
 				int sourceX = 0;
 				int sourceY = 0;
 				OrientedToSource( orientation, sourceWidth, sourceHeight,
@@ -452,7 +461,9 @@ namespace
 }
 
 ChannelImageOverride::ChannelImageOverride()
-	: texture( NULL ), textureData( NULL ), ready( false )
+	: texture( NULL ), textureData( NULL ), ready( false ),
+	  cachedPhotoSize(0), cachedPhotoTime(0), cachedPhotoWidth(0), cachedPhotoHeight(0),
+	  cachedPhotoFit(ChannelPreview::Fill)
 {
 }
 
@@ -487,6 +498,7 @@ void ChannelImageOverride::Reset()
 	textureData = NULL;
 	ready = false;
 	lastError.clear();
+	cachedPhotoPath.clear();
 }
 
 bool ChannelImageOverride::ValidForecastDimensions( unsigned int width,
@@ -582,6 +594,20 @@ bool ChannelImageOverride::Apply( Layout *layout, Target target,
 
 	unsigned char *compressed = NULL;
 	unsigned long compressedSize = 0;
+	struct stat photoStat;
+	const bool cacheablePhoto = target == PhotoBanner && stat(path.c_str(), &photoStat) == 0;
+	if( cacheablePhoto && texture && cachedPhotoPath == path
+		&& cachedPhotoSize == photoStat.st_size && cachedPhotoTime == photoStat.st_mtime
+		&& cachedPhotoWidth == textureWidth && cachedPhotoHeight == textureHeight
+		&& cachedPhotoFit == fitMode )
+	{
+		materials[materialIndex]->SetForcedTexture(texture);
+		picture->SetSize(paneWidth, paneHeight);
+		picture->SetVisible(true);
+		picture->SetHide(false);
+		ready = true;
+		return true;
+	}
 	if( !ReadBoundedFile( path, &compressed, &compressedSize, lastError ) )
 		return false;
 
@@ -675,6 +701,16 @@ bool ChannelImageOverride::Apply( Layout *layout, Target target,
 	picture->SetVisible( true );
 	picture->SetHide( false );
 	ready = true;
+	cachedPhotoPath.clear();
+	if( cacheablePhoto )
+	{
+		cachedPhotoPath = path;
+		cachedPhotoSize = photoStat.st_size;
+		cachedPhotoTime = photoStat.st_mtime;
+		cachedPhotoWidth = textureWidth;
+		cachedPhotoHeight = textureHeight;
+		cachedPhotoFit = fitMode;
+	}
 	gprintf( "Channel image: %s -> %s (%dx%d, %s)\n", path.c_str(),
 		paneName, convertedWidth, convertedHeight,
 		fitMode == ChannelPreview::Fill ? "fill" : "fit" );
