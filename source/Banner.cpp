@@ -2197,6 +2197,7 @@ Banner::Banner( const u8 *data, u32 len )
 {
 	marioKartCarouselObj[ 0 ] = NULL;
 	marioKartCarouselObj[ 1 ] = NULL;
+	for(int i = 0; i < 3; ++i) photoHeaderPanes[i] = NULL;
 	memset( generatedText, 0, sizeof( generatedText ) );
 	memset( nintendoIconText, 0, sizeof( nintendoIconText ) );
 	nintendoStoryCycle=false;
@@ -2404,8 +2405,11 @@ Object *Banner::LoadBanner()
 		{
 			insertedPhotoPane = dynamic_cast<Picture *>(layout_banner->FindPane("pic_photo"));
 			photoCorkPane = layout_banner->FindPane("cork");
-			photoBannerWidth = layout_banner->GetWidth();
-			photoBannerHeight = layout_banner->GetHeight();
+			photoBannerWidth = insertedPhotoPane->GetWidth();
+			photoBannerHeight = insertedPhotoPane->GetHeight();
+			const char *headerNames[3] = {"belt_c", "logo", "logo_nintendo"};
+			for(int i = 0; i < 3; ++i)
+				photoHeaderPanes[i] = layout_banner->FindPane(headerNames[i]);
 		}
 	}
 	// create object
@@ -2665,8 +2669,18 @@ void Banner::ApplyGeneratedChannelText()
 		insertedPhotoPane->SetWidescreen(false);
 		insertedPhotoPane->SetVisible(true);
 		insertedPhotoPane->SetHide(false);
-		insertedPhotoPane->SetAlpha(
-			BannerInformationAlpha(bannerInfoFrames, bannerInfoDelayFrames / 4, 16));
+		const u8 photoAlpha = BannerInformationAlpha(
+			bannerInfoFrames, bannerInfoDelayFrames / 4, 16);
+		insertedPhotoPane->SetAlpha(photoAlpha);
+		// The complete inserted-photo presentation shares one reveal clock:
+		// cork first, then photo, title belt and both authored logos together.
+		for(int i = 0; i < 3; ++i)
+		{
+			if(!photoHeaderPanes[i]) continue;
+			photoHeaderPanes[i]->SetVisible(true);
+			photoHeaderPanes[i]->SetHide(false);
+			photoHeaderPanes[i]->SetAlpha(photoAlpha);
+		}
 		if(photoCorkPane)
 		{
 			photoCorkPane->SetVisible(true);
@@ -3563,6 +3577,7 @@ void Banner::UnloadBanner()
 	DELETE( layout_banner );
 	insertedPhotoPane = NULL;
 	photoCorkPane = NULL;
+	for(int i = 0; i < 3; ++i) photoHeaderPanes[i] = NULL;
 	// Retain one bounded decoded photo while this Banner is cached by the grid.
 	// Reopening it can rebind the texture without repeating JPEG/PNG decoding.
 	if( !bannerImageOverride.HasCachedPhotoTexture() ) bannerImageOverride.Reset();

@@ -473,13 +473,16 @@ bool ChannelImageOverride::PhotoBannerContentBounds( Layout *layout,
 	Pane *band = layout ? layout->FindPane( "belt_c" ) : NULL;
 	if( !band ) return false;
 	width = layout->GetWidth();
-	// Cover the complete layout, not just the area below belt_c. The authored
-	// belt and both logo layers are drawn over this background by Banner.
-	height = layout->GetHeight();
+	// Slight vertical overscan covers the authored banner aperture more fully.
+	// Use the same bounds for cover-crop decoding AND the displayed pane, so
+	// this enlarges the photo without stretching its source aspect ratio.
+	const float nativeHeight = layout->GetHeight();
+	height = std::min(nativeHeight * 1.05f, 1024.0f);
 	centerY = 0.0f;
 	return std::isfinite( width ) && std::isfinite( height )
 		&& std::isfinite( centerY ) && width > 0.0f && width <= 1024.0f
-		&& height > 0.0f && height <= layout->GetHeight()
+		&& std::isfinite(nativeHeight) && nativeHeight > 0.0f
+		&& height >= nativeHeight
 		&& height <= 1024.0f;
 }
 

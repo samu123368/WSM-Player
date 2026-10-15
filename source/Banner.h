@@ -118,6 +118,7 @@ protected:
 	bool hasInsertedPhotoImage;
 	Picture *insertedPhotoPane;
 	Pane *photoCorkPane;
+	Pane *photoHeaderPanes[3];
 	float photoBannerWidth, photoBannerHeight;
 	bool bannerCustomImageAttempted;
 	bool iconCustomImageAttempted;

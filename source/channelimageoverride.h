@@ -29,7 +29,8 @@ public:
 	ChannelImageOverride();
 	~ChannelImageOverride();
 	// Shared by decoding and rendering so the image covers precisely the space
-	// below the native Photo Channel title band, including regional layouts.
+	// across the native Photo Channel aperture, including slight vertical
+	// overscan. The title band/logos stay above the photo, not stretched with it.
 	static bool PhotoBannerContentBounds( Layout *layout, float &width,
 		float &height, float &centerY );
 
