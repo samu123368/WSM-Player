@@ -8,6 +8,7 @@ namespace Localization
 	enum { Portuguese = 10, Swedish = 11, LanguageCount = 46 };
 	int CurrentLanguage();
 	int NativeLanguage();
+	bool MonthFirstDate();
 	const char *LanguageCode();
 	const char *LanguageName( int language );
 	enum Key

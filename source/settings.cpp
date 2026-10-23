@@ -29,6 +29,7 @@ distribution.
 #include "gecko.h"
 #include "settings.h"
 #include "wsmversion.h"
+#include "SystemMenu/dateformat.h"
 #include "channelpreviewconfig.h"
 #include "SoundOperations/gui_sound.h"
 
@@ -286,7 +287,7 @@ void Load( int argc, char *argv[] )
 		200, 50, 400 );
 	clock24Hour = GetXMLBool(
 		appNode->FirstChildElement( "clock24Hour" ), false );
-	dateOrder = GetXMLInt(appNode->FirstChildElement("dateOrder"), 0, 0, 3);
+	dateOrder = DateFormat::Normalize(GetXMLInt(appNode->FirstChildElement("dateOrder"), 0, 0, 3));
 	uiLanguage = GetXMLInt( appNode->FirstChildElement( "uiLanguage" ), -1, -1, 45 );
 	// Removed extra-language preferences migrate to English, not a new ID.
 	if(uiLanguage > 6) uiLanguage = 1;

@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include "localization.h"
+#include "dateformat.h"
 #include "../settings.h"
 
 namespace
@@ -468,6 +469,12 @@ int Localization::CurrentLanguage()
 {
 	const int language = Settings::uiLanguage == -1 ? CONF_GetLanguage() : Settings::uiLanguage;
 	return language >= 0 && language <= 6 ? language : CONF_LANG_ENGLISH;
+}
+
+bool Localization::MonthFirstDate()
+{
+	static const int area = CONF_GetArea();
+	return DateFormat::AutomaticMonthFirst(CurrentLanguage(),area == CONF_AREA_USA);
 }
 
 int Localization::NativeLanguage()

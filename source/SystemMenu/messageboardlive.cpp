@@ -256,10 +256,9 @@ void MessageBoardLive::Draw(int page, int dayOffset, int monthOffset,
 	const int weekday = date.tm_wday == 0 ? 116 : date.tm_wday + 109;
 	strlcpy16(dateText,Bmg::Instance()->GetMessage(weekday),64);
 	const int len = strlen16(dateText);
-	const bool japanese = Localization::NativeLanguage() == 0;
 	char numeric[24];
 	DateFormat::Format(numeric, sizeof(numeric), Settings::dateOrder,
-		date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, japanese, true);
+		date.tm_mon + 1, date.tm_mday, Localization::MonthFirstDate());
 	snprintf16(dateText + len,64 - len," %s", numeric);
 	SetText(board,"T_Day_b",dateText);
 	if(Textbox *text = board->FindTextbox("T_Day_b")) text->SetUniformTextFit(true);
