@@ -35,6 +35,8 @@ public:
 
 	bool Load( const u8* boardAshData, u32 boardAshSize );
 	void Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen );
+	// Transition underlay only: the moving menu snapshot already owns the date.
+	void RenderBackdrop( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen );
 
 	// set the date that appears on the screen
 	//! the grey background contains the pane for the date

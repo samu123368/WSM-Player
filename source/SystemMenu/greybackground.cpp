@@ -106,6 +106,23 @@ bool GreyBackground::Load( const u8* boardAshData, u32 boardAshSize )
 	return true;
 }
 
+void GreyBackground::RenderBackdrop( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen )
+{
+	// Do not expose a stationary date below the menu snapshot as it slides up.
+	// Include the offscreen native date copies in case a theme moves them.
+	const char *names[] = {"T_Day_a", "T_Day_b", "T_Day_c"};
+	Pane *dates[3] = {NULL,NULL,NULL};
+	bool hidden[3] = {false,false,false};
+	for( int n = 0; n < 3; ++n )
+	{
+		dates[n] = layout ? layout->FindPane(names[n]) : NULL;
+		if( dates[n] ) { hidden[n] = dates[n]->GetHide(); dates[n]->SetHide(true); }
+	}
+	Render(modelview,ScreenProps,widescreen);
+	for( int n = 0; n < 3; ++n )
+		if( dates[n] ) dates[n]->SetHide(hidden[n]);
+}
+
 void GreyBackground::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescreen )
 {
 	if( !loaded )

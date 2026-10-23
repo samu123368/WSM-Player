@@ -427,7 +427,7 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 		return;
 	}
 	if( ( openingFrame > 0 || closingFrame > 0 ) && entryBackground )
-		entryBackground->Render( modelview, screen, widescreen );
+		entryBackground->RenderBackdrop( modelview, screen, widescreen );
 	PrepareTextureGX();
 
 	if( openingFrame > 0 )

@@ -97,8 +97,8 @@ source/SystemMenu/freecameratools.cpp,12470,82df8033524e874ba33b8606da73bd775933
 source/SystemMenu/freecameratools.h,1630,7fe5757cba060b6978b4eb025d6fa98131633d70cfecfd45d9f1b0e35f7ea20a,Manual provenance review; no recognized notice in file
 source/SystemMenu/gcbanner.cpp,1794,263d8a22e0e4f46fa03e0ea14886003946f5008aa17f1da29371f111272ec780,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/gcbanner.h,1307,2a88a2b919f58586054c078aea82dce61a4bea0dd0563ddc3f955313f03643d5,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/greybackground.cpp,3002,22c37097964a639822c248f2d5651d0b07715c478aa1a4328dc483ab0c8fc126,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/greybackground.h,1839,c2d532da084d5f8df67be74937e71fc3bb5ac94a9b0f59d86f6a6df34332e565,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/greybackground.cpp,3679,54a74927ed57eb7c747f4ca9a4d70a0634d89a6d7129a40df5a2f5fecaec9d69,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/greybackground.h,2000,a71d50684f79251447e0755ab5411cbab99e8b18489dc0185774b97aaec6b882,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/healthscreen.cpp,6502,f8ca0c40ec79f68d03c801be98c0b2bb089b1421704fad713d6220f36ee927c9,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/healthscreen.h,2219,8cd51b8829e8e23f76e112652b4023599519897f64bd275f622d778fd3b8e193,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/home_language_textures.inc,582,dbdbef0a67eb16149cc6b17b9d3e29a9d85298efafed035b8b7f24499fec2556,Manual provenance review; no recognized notice in file
@@ -123,7 +123,7 @@ source/SystemMenu/messageboarddate.h,839,a7960d35045d0a1bbed306f5921dc7e3db156a7
 source/SystemMenu/messageboardgeometry.h,1090,c87ef5716b5c3ac13047b69cf5512bedc371f56afaa527dee812dee652b4361e,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardlive.cpp,13084,91eeb37166623d4fd06fe6010ccfd4a8c7c9365a77bb52a6e91c35b7ea256c08,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardlive.h,1371,c445f50f41dae0dbfe541701f85ba48c38f71aad9defcb9ad8d6394cbccc72c9,Manual provenance review; no recognized notice in file
-source/SystemMenu/messageboardscreen.cpp,13293,bf961900a5a19da7fb7f24116adf93227c2f61e29e9c0d6002f4dc991c02667e,Manual provenance review; no recognized notice in file
+source/SystemMenu/messageboardscreen.cpp,13301,afbf17b4bc30bc2ea2f489bd4ded822b601e0ab1c885f7a3ef4b62f4063a2bbc,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardscreen.h,1920,da349f6ce24810c674f98a77f7f806b2f7b1c7c827032f15050973f99caf2526,Manual provenance review; no recognized notice in file
 source/SystemMenu/miiprofiles.cpp,2987,301368434ae1cb4e29766d7644ae16aef7b0a042f0cd5d24a5afb1150b73e41c,Manual provenance review; no recognized notice in file
 source/SystemMenu/miiprofiles.h,592,0f5e565ce619aa5e5fb7983b499dddb626261a49eb11a47133ce48d79fa71ebc,Manual provenance review; no recognized notice in file
@@ -264,7 +264,7 @@ source/video.cpp,17070,c0df9fc03246aa869103a971992e17c63dd3a45aede4a88e80c3ca897
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,e1d41493cf2cd9d03dc3e391121bc1a3a135af1cc36fefed86cadbc08698ee48,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,e175228c29cd71cb6ad1674003c5e5ef25d8ec95b417f0426b87c72285a8166a,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file
