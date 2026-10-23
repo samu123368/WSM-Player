@@ -161,7 +161,7 @@ GXColor ThemeUi::TitleInk(u8 alpha) const
 	return (GXColor){(u8)std::max(0,std::min(255,(int)ink.r)),
 		(u8)std::max(0,std::min(255,(int)ink.g)),(u8)std::max(0,std::min(255,(int)ink.b)),alpha};
 }
-bool ThemeUi::Button(float x, float y, float w, float h, u8 alpha, bool focused)
+bool ThemeUi::Button(float x, float y, float w, float h, u8 alpha, bool focused, bool widescreen)
 {
 	if( !loaded || w <= 0 || h <= 0 ) return false;
 	const ThemeButtonGeometry size = ThemeButtonSize(w,h);
@@ -180,6 +180,9 @@ bool ThemeUi::Button(float x, float y, float w, float h, u8 alpha, bool focused)
 	Mtx view;
 	guMtxIdentity(view);
 	guMtxScaleApply(view, view, size.scale, -size.scale, 1);
+	// Isolated board controls bypass N_Dialog, the native aspect-correction
+	// parent. Correct the complete widget once, without moving its center.
+	if( widescreen ) guMtxApplyScale(view,view,.82f,1,1);
 	guMtxTransApply(view, view, x + w * .5f, y + h * .5f, 0);
 	button->RenderPane("N_BtnB_Pic", view, alpha);
 	if( focused )
@@ -218,9 +221,9 @@ bool ThemeUi::Panel(float x, float y, float w, float h, u8 alpha)
 	button->RenderPane("N_Base",view,alpha);
 	return true;
 }
-bool ThemeUi::LabeledButton(float x, float y, float w, float h, u8 alpha, const char16 *text)
+bool ThemeUi::LabeledButton(float x, float y, float w, float h, u8 alpha, const char16 *text, bool widescreen)
 {
-	if( !Button(x,y,w,h,alpha) ) return false;
+	if( !Button(x,y,w,h,alpha,false,widescreen) ) return false;
 	Textbox *label = button->FindTextbox("T_BtnB");
 	if( !label ) return true;
 	label->SetText(text); label->SetVisible(true); label->SetHide(false); label->SetUniformTextFit(true);
@@ -231,6 +234,7 @@ bool ThemeUi::LabeledButton(float x, float y, float w, float h, u8 alpha, const 
 	label->SetTextColor((GXColor){255,255,255,255}); label->SetAlpha(255);
 	label->SetFontSize(24,24);
 	Mtx view; guMtxIdentity(view); guMtxScaleApply(view,view,1,-1,1);
+	if( widescreen ) guMtxApplyScale(view,view,.82f,1,1);
 	guMtxTransApply(view,view,x + w * .5f,y + h * .5f,0);
 	button->RenderPane("T_BtnB",view,alpha);
 	label->SetHide(true);

@@ -121,7 +121,7 @@ source/SystemMenu/menuhandler.cpp,100695,b46f8fa33783fe3a13e866d10fd5f1051f23855
 source/SystemMenu/menuhandler.h,7919,0034b82e24fb933ca5c62803143ada65504de029b702cfa521d3e33d9030cad8,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/messageboarddate.h,839,a7960d35045d0a1bbed306f5921dc7e3db156a72deee04a1fddbedb61a6bd00b,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardgeometry.h,1090,c87ef5716b5c3ac13047b69cf5512bedc371f56afaa527dee812dee652b4361e,Manual provenance review; no recognized notice in file
-source/SystemMenu/messageboardlive.cpp,12797,36b64f550cf976063b1f0bdc9ca4d64f9d489821d1ddcf2d1017de2f00414882,Manual provenance review; no recognized notice in file
+source/SystemMenu/messageboardlive.cpp,13149,7918262734e8aaf28d7030de68f9718ea3e8833c3f80bc4234e8d11fd05f78bd,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardlive.h,1371,c445f50f41dae0dbfe541701f85ba48c38f71aad9defcb9ad8d6394cbccc72c9,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardscreen.cpp,13293,bf961900a5a19da7fb7f24116adf93227c2f61e29e9c0d6002f4dc991c02667e,Manual provenance review; no recognized notice in file
 source/SystemMenu/messageboardscreen.h,1920,da349f6ce24810c674f98a77f7f806b2f7b1c7c827032f15050973f99caf2526,Manual provenance review; no recognized notice in file
@@ -146,8 +146,8 @@ source/SystemMenu/settingsselect.cpp,27559,3013338258dbac57a589c98257a99bdff16b4
 source/SystemMenu/settingsselect.h,4749,23a0f6ecb6352f4d5deee0c78d43ff345ec5ac3dcf94982c6beef9572e23c6fc,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/systemmenuresource.cpp,2847,f0ed7a6083d6a29cfa4f435f1c6ba43374c9fab07fbcef548ba9e761b4e1e050,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/systemmenuresource.h,2346,141711a06a23aff554805e22ade6f213158dea6d1615b1432670c871b2e37b7a,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/themeui.cpp,11584,397764680228c8093350ad54177ea602ad389e3c768ebd46760b1b44131720f6,Manual provenance review; no recognized notice in file
-source/SystemMenu/themeui.h,1143,9e9133bc11e5f1fb7b739958f7eb2369d8ec1bcffccba3df43236d9b8732eb6b,Manual provenance review; no recognized notice in file
+source/SystemMenu/themeui.cpp,11892,94f3bc468b20076c705c4138618367e65e1b7af9adbcc5a3f315be52115a5725,Manual provenance review; no recognized notice in file
+source/SystemMenu/themeui.h,1193,8a368b0509b27d0baa3149fd8d9ca6e9a0346f55a10aabd13bc6afc71c5179ad,Manual provenance review; no recognized notice in file
 source/SystemMenu/themeuicontrast.h,1271,e4ce1f803b1f812258afd133546c6aae0ca5369dee561063d8fb3b7a201bbede,Manual provenance review; no recognized notice in file
 source/SystemMenu/themeuigeometry.h,357,2a462ffc5cbfb1231b76b570de259cb3adc9613a771fb647ac7802cc6477a2c2,Manual provenance review; no recognized notice in file
 source/SystemMenu/tinyfont_impl.cpp,4429,8017d38ff77cfa144e4b5b2f64e7c8d58fd1938e809bc2707a205a032f928c2d,Manual provenance review; no recognized notice in file
@@ -264,7 +264,7 @@ source/video.cpp,17070,c0df9fc03246aa869103a971992e17c63dd3a45aede4a88e80c3ca897
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,a9d864333b267319c2c8ee72d954ff6838b3d255c14ac38c613b79ef1856b812,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,f830299ae3dfa8724f53f882e6bfe93478e9b7295516d9ca4cdd6da9df1ea688,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

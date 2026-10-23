@@ -126,6 +126,10 @@ bool MessageBoardLive::Load(const U8Archive &archive)
 	if( Pane *highlight = cell->FindPane("Cal_Ac") ) highlight->SetAlpha(255);
 	SetText(compose,"T_Mail",133); SetText(compose,"T_Adress",134);
 	SetText(chrome,"T_CalExit",79);
+	// This footer is rendered without its N_BtnL aspect-correction parent.
+	// Keep its artwork and lettering corrected together, including long labels.
+	if( Pane *back = chrome->FindPane("N_BtnL_a3_Cal") ) back->SetWidescreen(true);
+	if( Textbox *back = chrome->FindTextbox("T_CalExit") ) back->SetUniformTextFit(true);
 	SetText(memo,"T_Header",133,true);
 	SetText(memo,"T_2l_TextBox",Localization::GetText("Memo"),true);
 	// Retail placeholder portraits/demo messages are not real user data.
@@ -282,13 +286,13 @@ void MessageBoardLive::Draw(int page, int dayOffset, int monthOffset,
 		{
 			skin->DialogText(canvas,x + (screen.x-canvas.x)*.5f,
 				y + (screen.y-canvas.y)*.5f,alpha,Bmg::Instance()->GetMessage(382));
-			skin->LabeledButton(controlX + 140,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(79));
-			skin->LabeledButton(controlX + 340,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(14));
+			skin->LabeledButton(controlX + 140,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(79),widescreen);
+			skin->LabeledButton(controlX + 340,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(14),widescreen);
 		}
 		return;
 	}
 	DrawChrome(view,landing,landing || page == 3 || page == 6,alpha,widescreen);
 	if( skin && (page == 5 || page == 6) )
 		skin->LabeledButton(controlX + 455,controlY + 375,170,72,alpha,
-			Bmg::Instance()->GetMessage(page == 5 ? 36 : 41));
+			Bmg::Instance()->GetMessage(page == 5 ? 36 : 41),widescreen);
 }

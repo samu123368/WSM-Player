@@ -10,9 +10,9 @@ public:
 	ThemeUi();
 	~ThemeUi();
 	bool Load(const U8Archive &archive);
-	bool Button(float x, float y, float w, float h, u8 alpha, bool focused = false);
+	bool Button(float x, float y, float w, float h, u8 alpha, bool focused = false, bool widescreen = false);
 	bool Panel(float x, float y, float w, float h, u8 alpha);
-	bool LabeledButton(float x, float y, float w, float h, u8 alpha, const char16 *text);
+	bool LabeledButton(float x, float y, float w, float h, u8 alpha, const char16 *text, bool widescreen = false);
 	void DialogText(const Vec2f &screen, float x, float y, u8 alpha, const char16 *text);
 	bool Chrome(const Vec2f &screen, float slide, u8 alpha);
 	GXColor Ink(u8 alpha) const;
