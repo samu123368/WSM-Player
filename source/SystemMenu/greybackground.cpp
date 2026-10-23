@@ -22,6 +22,10 @@ distribution.
 */
 #include "bmg.h"
 #include "greybackground.h"
+#include "dateformat.h"
+#include "settings.h"
+#include "Textbox.h"
+#include <ctime>
 
 GreyBackground::GreyBackground()
 	: layout( NULL ),
@@ -55,9 +59,15 @@ void GreyBackground::SetDate( u8 weekDay, u8 dayOfTheMonth, u8 month )
 	// get weekday text
 	int len = strlcpy16( str, Bmg::Instance()->GetMessage( weekDay ), 64 );
 
-	// add day/month numbers
-	snprintf16( str + len, 64 - len, " %u/%u", month, dayOfTheMonth );
+	// Display preference only; leave the Wii's actual date/time unchanged.
+	const time_t now = time(NULL);
+	const tm *today = localtime(&now);
+	char numeric[24];
+	DateFormat::Format(numeric, sizeof(numeric), Settings::dateOrder,
+		today ? today->tm_year + 1900 : 1970, month, dayOfTheMonth, true, false);
+	snprintf16( str + len, 64 - len, " %s", numeric );
 	SetText( layout, "T_Day_b", str );
+	if(layout) if(Textbox *text = layout->FindTextbox("T_Day_b")) text->SetUniformTextFit(true);
 }
 
 bool GreyBackground::Load( const u8* boardAshData, u32 boardAshSize )

@@ -113,6 +113,7 @@ bool ChannelGrid::LoadFailed( const char *format, ... )
 ChannelGrid::ChannelGrid()
 	: dcIcon( NULL ),
 	  lastTime( 0 ),
+	  lastDateKey( -1 ), lastDateOrder( -1 ),
 	  clockIntroFrames( 90 ),
 	  channelFrame( NULL ),
 	  channelStatic( NULL ),
@@ -594,9 +595,12 @@ void ChannelGrid::UpdateClock()
 		pane->SetVisible( !pane->GetVisible() );
 	}
 
-	if( ( !timeinfo->tm_hour && !timeinfo->tm_min && !timeinfo->tm_sec ) || !lastTime )
+	const int dateKey = timeinfo->tm_year * 366 + timeinfo->tm_yday;
+	if( !lastTime || dateKey != lastDateKey || Settings::dateOrder != lastDateOrder )
 	{
 		DateChanged( timeinfo->tm_wday, timeinfo->tm_mday, timeinfo->tm_mon + 1 );
+		lastDateKey = dateKey;
+		lastDateOrder = Settings::dateOrder;
 	}
 
 	lastTime = now;

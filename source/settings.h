@@ -59,6 +59,8 @@ extern int mouseSpeed;
 // False uses the Wii Menu's original 12-hour clock. True shows 00-23 and
 // hides the AM/PM marker.
 extern bool clock24Hour;
+// DateFormat::Order: 0 keeps native formatting; 1 D/M/Y, 2 M/D/Y, 3 Y/M/D.
+extern int dateOrder;
 // -1 follows the console; other values are WSM UI language IDs (not SYSCONF).
 extern int uiLanguage;
 // Developer camera is opt-in for this session only; never activate it on boot.

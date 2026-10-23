@@ -1,4 +1,5 @@
 #include "appsettingsscreen.h"
+#include "dateformat.h"
 #include "playerupdate.h"
 #include "wsmversion.h"
 #include "agreementviewer.h"
@@ -1990,7 +1991,7 @@ int AppSettingsScreen::RowsForPage() const
 		return std::max( 1, std::min( 8, (int)systemSettingsLabels.size() ) );
 	case PageMain: return 11;
 	case PageUpdates: return 3;
-	case PageClock: return 1;
+	case PageClock: return 2;
 	case PageLanguages: return SelectableLanguageCount;
 	case PageAgreement: return agreementViewer ? agreementViewer->Count()+MaxVisibleListRows-1 : 1;
 	case PageAudio: return 2;
@@ -2715,9 +2716,16 @@ void AppSettingsScreen::ActivateCurrent()
 		}
 		break;
 	case PageClock:
-		Settings::clock24Hour = !Settings::clock24Hour;
-		settingsDirty = true;
-		Commit();
+		{
+			const int previousOrder = Settings::dateOrder;
+			const bool previousClock = Settings::clock24Hour;
+			if(selectedRow == 0) Settings::clock24Hour = !Settings::clock24Hour;
+			else if(selectedRow == 1) Settings::dateOrder = DateFormat::Step(Settings::dateOrder, 1);
+			else break;
+			settingsDirty = true;
+			Commit();
+			if(saveFailed) { Settings::dateOrder = previousOrder; Settings::clock24Hour = previousClock; }
+		}
 		break;
 	case PageLanguages:
 		if( selectedRow >= 0 && selectedRow < SelectableLanguageCount )
@@ -2918,7 +2926,15 @@ void AppSettingsScreen::AdjustCurrent( int direction )
 	}
 	if( page == PageClock )
 	{
-		ActivateCurrent();
+		if(selectedRow == 1)
+		{
+			const int previous = Settings::dateOrder;
+			Settings::dateOrder = DateFormat::Step(previous, direction);
+			settingsDirty = true;
+			Commit();
+			if(saveFailed) Settings::dateOrder = previous;
+		}
+		else ActivateCurrent();
 		return;
 	}
 	if( page == PageAudio )
@@ -4247,7 +4263,7 @@ void AppSettingsScreen::RenderMain( const Vec2f &screen, float slide,
 		else
 		{
 			const char *labels[] = { "Audio Settings", "Channel Settings",
-				"Controller & USB", "Themes", "Language", "Clock format", "WSM Player Updates" };
+				"Controller & USB", "Themes", "Language", "Date & time format", "WSM Player Updates" };
 			DrawUtf8Fit( slide + 76.0f * sx, textY, 390.0f * sx,
 				Localization::GetUtf8( labels[ row - 4 ] ),
 				21.0f * scale, 14.0f * scale, ink );
@@ -4399,10 +4415,12 @@ void AppSettingsScreen::RenderAudio( const Vec2f &screen, float slide,
 void AppSettingsScreen::RenderClock( const Vec2f &screen, float slide,
 	float scale, u8 alpha ) const
 {
-	DrawChrome( screen, slide, scale, alpha, "Clock format" );
-	DrawListPanel( screen, slide, scale, alpha, 1, selectedRow, hoveredRow, navigationMode, firstVisibleRow, hoveredScrollButton );
-	DrawUtf8Row( screen, slide, scale, alpha, 0, 1, "Clock format",
+	DrawChrome( screen, slide, scale, alpha, "Date & time format" );
+	DrawListPanel( screen, slide, scale, alpha, 2, selectedRow, hoveredRow, navigationMode, firstVisibleRow, hoveredScrollButton );
+	DrawUtf8Row( screen, slide, scale, alpha, 0, 2, "Clock format",
 		Settings::clock24Hour ? "24-hour" : "12-hour" );
+	DrawUtf8Row( screen, slide, scale, alpha, 1, 2, "Date order",
+		DateFormat::Label(Settings::dateOrder));
 	DrawBackControl( screen, slide, scale, alpha, closeHovered, saveFailed );
 }
 

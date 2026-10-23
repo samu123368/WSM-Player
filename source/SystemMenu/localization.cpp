@@ -253,6 +253,7 @@ namespace
 	};
 	const Utf8Translation CompleteText[] = {
 #include "localization_catalogue.inc"
+#include "localization_dateformat.inc"
 	};
 
 	char16 Decoded[ Localization::KeyCount ][ LanguageCount ][ MaxLocalizedCharacters ];

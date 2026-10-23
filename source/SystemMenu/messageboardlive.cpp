@@ -4,6 +4,9 @@
 #include "object.h"
 #include "video.h"
 #include "messageboarddate.h"
+#include "dateformat.h"
+#include "settings.h"
+#include "Textbox.h"
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
@@ -237,10 +240,12 @@ void MessageBoardLive::Draw(int page, int dayOffset, int monthOffset,
 	strlcpy16(dateText,Bmg::Instance()->GetMessage(weekday),64);
 	const int len = strlen16(dateText);
 	const bool japanese = Localization::NativeLanguage() == 0;
-	snprintf16(dateText + len,64 - len," %02d/%02d",
-		japanese ? date.tm_mon + 1 : date.tm_mday,
-		japanese ? date.tm_mday : date.tm_mon + 1);
+	char numeric[24];
+	DateFormat::Format(numeric, sizeof(numeric), Settings::dateOrder,
+		date.tm_year + 1900, date.tm_mon + 1, date.tm_mday, japanese, true);
+	snprintf16(dateText + len,64 - len," %s", numeric);
 	SetText(board,"T_Day_b",dateText);
+	if(Textbox *text = board->FindTextbox("T_Day_b")) text->SetUniformTextFit(true);
 	Mtx view; guMtxIdentity(view);
 	guMtxScaleApply(view,view,screen.x / 608.0f,-screen.y / 456.0f,1);
 	guMtxTransApply(view,view,x + screen.x * .5f,y + screen.y * .5f,0);

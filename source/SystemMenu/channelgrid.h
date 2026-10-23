@@ -108,6 +108,7 @@ private:
 
 	DiscChannelIcon *dcIcon;// pointer to the resource for the disc channel icons
 	time_t lastTime;
+	int lastDateKey, lastDateOrder;
 	int clockIntroFrames;
 	Layout *channelFrame;
 	Layout *channelStatic;

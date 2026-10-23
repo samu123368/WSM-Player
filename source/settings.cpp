@@ -45,6 +45,7 @@ bool menuMusicEnabled = true;
 bool usbInputEnabled = true;
 int mouseSpeed = 200;
 bool clock24Hour = false;
+int dateOrder = 0;
 int uiLanguage = -1;
 bool freeCameraEnabled = false;
 bool mountDVD = true;
@@ -221,6 +222,7 @@ void Load( int argc, char *argv[] )
 	usbInputEnabled = true;
 	mouseSpeed = 200;
 	clock24Hour = false;
+	dateOrder = 0;
 	uiLanguage = -1;
 	mountDVD = true;
 	sdBannerPath = "sd:/banners/";
@@ -284,6 +286,7 @@ void Load( int argc, char *argv[] )
 		200, 50, 400 );
 	clock24Hour = GetXMLBool(
 		appNode->FirstChildElement( "clock24Hour" ), false );
+	dateOrder = GetXMLInt(appNode->FirstChildElement("dateOrder"), 0, 0, 3);
 	uiLanguage = GetXMLInt( appNode->FirstChildElement( "uiLanguage" ), -1, -1, 45 );
 	// Removed extra-language preferences migrate to English, not a new ID.
 	if(uiLanguage > 6) uiLanguage = 1;
@@ -349,6 +352,7 @@ bool Save()
 	AddBoolSetting( appNode, "usbInputEnabled", usbInputEnabled );
 	AddIntSetting( appNode, "mouseSpeed", mouseSpeed );
 	AddBoolSetting( appNode, "clock24Hour", clock24Hour );
+	AddIntSetting( appNode, "dateOrder", dateOrder );
 	AddIntSetting( appNode, "uiLanguage", uiLanguage );
 	AddBoolSetting( appNode, "mountDVD", mountDVD );
 	AddStringSetting( appNode, "sdBannerPath", sdBannerPath );
