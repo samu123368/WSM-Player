@@ -82,7 +82,7 @@ public:
 	void RenderWithCurrentMtx( Mtx &modelview, bool widescreen ) const;
 	// Draw an isolated native widget with its own resource table. No input,
 	// animation callbacks or parent layout transforms are involved.
-	void RenderPane( const char *name, Mtx &modelview, u8 alpha = 255 ) const;
+	void RenderPane( const char *name, Mtx &modelview, u8 alpha = 255, bool widescreen = false ) const;
 
 	FrameNumber GetFrame() const { return frameCurrent; }
 	void SetFrame( FrameNumber frame );

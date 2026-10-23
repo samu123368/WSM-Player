@@ -14,13 +14,14 @@ public:
 	~MessageBoardLive();
 	bool Load(const U8Archive &archive);
 	void Draw(int page, int dayOffset, int monthOffset, float x, float y,
-		const Vec2f &screen, u8 alpha);
+		const Vec2f &screen, u8 alpha, bool widescreen);
 	bool CalendarDateAt(float x, float y, const Vec2f &screen,
 		int dayOffset, int monthOffset, int &selectedOffset) const;
 private:
 	Layout *board, *backdrop, *chrome, *calendar, *cell, *compose, *memo, *address;
 	Animation *cellAnimation;
 	Object *dayStyle, *selectedStyle;
+	bool calendarPoseReady;
 	std::vector<u8 *> archives;
 	std::vector<std::string> archiveNames;
 	std::vector<u32> archiveSizes;
@@ -29,7 +30,7 @@ private:
 	Layout *Read(const U8Archive &archive, const char *ash, const char *layout,
 		const char *settledAnimation = NULL);
 	void DrawCalendar(Mtx &view, const Vec2f &canvas, const tm &date,
-		int monthOffset, u8 alpha);
-	void DrawChrome(Mtx &view, bool landing, bool arrows, u8 alpha);
+		int monthOffset, u8 alpha, bool widescreen);
+	void DrawChrome(Mtx &view, bool landing, bool arrows, u8 alpha, bool widescreen);
 };
 #endif

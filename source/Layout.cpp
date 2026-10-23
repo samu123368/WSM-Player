@@ -368,10 +368,10 @@ void Layout::RenderWithCurrentMtx( Mtx &modelview, bool widescreen ) const
 		panes[i]->Render(resources, 0xff, modelview, widescreen);
 }
 
-void Layout::RenderPane( const char *name, Mtx &modelview, u8 alpha ) const
+void Layout::RenderPane( const char *name, Mtx &modelview, u8 alpha, bool widescreen ) const
 {
 	Pane *pane = const_cast<Layout *>(this)->FindPane(name);
-	if( pane ) pane->Render(resources, alpha, modelview, false, true);
+	if( pane ) pane->Render(resources, alpha, modelview, widescreen, true);
 }
 
 void Layout::Render(Mtx &modelview, const Vec2f &ScreenProps, bool widescreen, u8 render_alpha) const

@@ -66,7 +66,7 @@ private:
 	void ActivateWithoutPointer();
 	void DrawTexture( Texture *texture, float x, float y, float width,
 		float height, u8 alpha ) const;
-	void DrawPage(bool previous, float x, float y, const Vec2f &screen, u8 alpha);
+	void DrawPage(bool previous, float x, float y, const Vec2f &screen, u8 alpha, bool widescreen);
 };
 
 #endif

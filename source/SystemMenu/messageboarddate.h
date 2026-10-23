@@ -13,14 +13,11 @@ inline int BoardCivilDay(const tm &date)
 	return era * 146097 + year * 365 + year / 4 - year / 100 + day;
 }
 
-// Inverse of the native calendar frame's five-degree rotation and translation.
+// Local coordinates of the straightened calendar. The caller inverts the
+// actual rendered frame matrix, including its native widescreen correction.
 inline int BoardCalendarCell(float x, float y)
 {
-	const float a = 5.0f * 3.14159265359f / 180.0f;
-	y -= 20;
-	const float localX = x * std::cos(a) + y * std::sin(a);
-	const float localY = -x * std::sin(a) + y * std::cos(a);
-	const int col = (int)std::floor((localX + 245) / 70);
-	const int row = (int)std::floor((162 - localY) / 50);
+	const int col = (int)std::floor((x + 245) / 70);
+	const int row = (int)std::floor((162 - y) / 50);
 	return col >= 0 && col < 7 && row >= 0 && row < 6 ? row * 7 + col : -1;
 }

@@ -1,5 +1,6 @@
 #include "messageboardscreen.h"
 #include "messageboardlive.h"
+#include "messageboardgeometry.h"
 
 #include <cstdlib>
 #include <algorithm>
@@ -10,6 +11,8 @@
 #include "Texture.h"
 #include "utils/TextureConverter.h"
 #include "video.h"
+#include "utils/sc.h"
+#include <ogc/conf.h>
 
 namespace
 {
@@ -209,8 +212,9 @@ void MessageBoardScreen::ActivateAt( float x, float y,
 	const Vec2f &screen )
 {
 	if( screen.x <= 0.0f || screen.y <= 0.0f ) return;
-	const float px = x * 640.0f / screen.x;
-	const float py = y * 480.0f / screen.y;
+	const bool pal50 = _CONF_GetVideo() == CONF_VIDEO_PAL && _CONF_GetEuRGB60() == 0;
+	const float px = BoardGeometry::ControlX(x,screen.x);
+	const float py = BoardGeometry::ControlY(y,screen.y,pal50);
 
 	switch( page )
 	{
@@ -401,6 +405,9 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 	bool widescreen )
 {
 	if( !live && (!snapshot || !snapshot->IsLoaded()) ) return;
+	const bool pal50 = _CONF_GetVideo() == CONF_VIDEO_PAL && _CONF_GetEuRGB60() == 0;
+	const float width = BoardGeometry::ViewWidth, height = BoardGeometry::ViewHeight(pal50);
+	const float left = BoardGeometry::Left(screen.x), top = BoardGeometry::Top(screen.y,pal50);
 	// Update marks the screen closed immediately before MenuHandler disposes it.
 	// Repaint the underlying board for that last frame so closing never flashes
 	// a black frame on real hardware.
@@ -414,7 +421,7 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 		if( menuSnapshot )
 		{
 			PrepareTextureGX();
-			DrawTexture( menuSnapshot, 0.0f, 0.0f, screen.x, screen.y, 255 );
+			DrawTexture( menuSnapshot, left, top, width, height, 255 );
 		}
 		else if( entryBackground ) entryBackground->Render( modelview, screen, widescreen );
 		return;
@@ -427,11 +434,11 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 	{
 		float progress = (float)( OpenFrames - openingFrame ) / OpenFrames;
 		progress = progress * progress * ( 3.0f - 2.0f * progress );
-		DrawPage(false,0,screen.y * (1 - progress),screen,255);
+		DrawPage(false,0,height * (1 - progress),screen,255,widescreen);
 		if( menuSnapshot )
 		{
 			PrepareTextureGX();
-			DrawTexture( menuSnapshot, 0.0f, -screen.y * progress, screen.x, screen.y, 255 );
+			DrawTexture( menuSnapshot, left, top - height * progress, width, height, 255 );
 		}
 		return;
 	}
@@ -439,18 +446,18 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 	{
 		if( requestedSettings )
 		{
-			DrawPage(false,0,0,screen,255);
+			DrawPage(false,0,0,screen,255,widescreen);
 			DrawSquare( 0, 0, screen.x, screen.y,
 				(GXColor){0, 0, 0, (u8)(255 * (CloseFrames - closingFrame) / CloseFrames)} );
 			return;
 		}
 		float progress = (float)closingFrame / CloseFrames;
 		progress = progress * progress * ( 3.0f - 2.0f * progress );
-		DrawPage(false,0,screen.y * (1 - progress),screen,255);
+		DrawPage(false,0,height * (1 - progress),screen,255,widescreen);
 		if( menuSnapshot )
 		{
 			PrepareTextureGX();
-			DrawTexture( menuSnapshot, 0.0f, -screen.y * progress, screen.x, screen.y, 255 );
+			DrawTexture( menuSnapshot, left, top - height * progress, width, height, 255 );
 		}
 		return;
 	}
@@ -460,25 +467,25 @@ void MessageBoardScreen::Render( Mtx &modelview, const Vec2f &screen,
 		if( transitionDirection != 0 )
 		{
 			const float direction = (float)transitionDirection;
-			DrawPage(true,-direction * progress * screen.x,0,screen,255);
-			DrawPage(false,direction * (1 - progress) * screen.x,0,screen,255);
+			DrawPage(true,-direction * progress * width,0,screen,255,widescreen);
+			DrawPage(false,direction * (1 - progress) * width,0,screen,255,widescreen);
 		}
 		else
 		{
-			DrawPage(true,0,0,screen,(u8)(255 * (1 - progress)));
-			DrawPage(false,0,0,screen,(u8)(255 * progress));
+			DrawPage(true,0,0,screen,(u8)(255 * (1 - progress)),widescreen);
+			DrawPage(false,0,0,screen,(u8)(255 * progress),widescreen);
 		}
 		return;
 	}
-	DrawPage(false,0,0,screen,255);
+	DrawPage(false,0,0,screen,255,widescreen);
 }
 
 void MessageBoardScreen::DrawPage(bool previous, float x, float y,
-	const Vec2f &screen, u8 alpha)
+	const Vec2f &screen, u8 alpha, bool widescreen)
 {
 	if( live ) live->Draw(previous ? previousPage : page,
 		previous ? previousDayOffset : dayOffset,
-		previous ? previousMonthOffset : monthOffset,x,y,screen,alpha);
+		previous ? previousMonthOffset : monthOffset,x,y,screen,alpha,widescreen);
 	else
 	{
 		PrepareTextureGX();

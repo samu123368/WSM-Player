@@ -4,6 +4,9 @@
 #include "object.h"
 #include "video.h"
 #include "messageboarddate.h"
+#include "messageboardgeometry.h"
+#include "utils/sc.h"
+#include <ogc/conf.h>
 #include "dateformat.h"
 #include "settings.h"
 #include "Textbox.h"
@@ -37,7 +40,7 @@ namespace
 }
 MessageBoardLive::MessageBoardLive() : board(NULL), backdrop(NULL), chrome(NULL),
 	calendar(NULL), cell(NULL), compose(NULL), memo(NULL), address(NULL),
-	cellAnimation(NULL), dayStyle(NULL), selectedStyle(NULL)
+	cellAnimation(NULL), dayStyle(NULL), selectedStyle(NULL), calendarPoseReady(false)
 {
 	dateText[0] = monthText[0] = cellText[0] = 0;
 }
@@ -116,6 +119,8 @@ bool MessageBoardLive::Load(const U8Archive &archive)
 	Pose(board,"N_TopBack",0,0);
 	Hide(board,"TopBack_a"); Hide(board,"TopBack_c");
 	Pose(calendar,"N_CalAll",0,20);
+	Pose(calendar,"N_Cal_b0",0,0);
+	Pose(calendar,"N_Cal_b1",0,0);
 	Hide(calendar,"N_Cal_a0"); Hide(calendar,"N_Cal_c0");
 	Hide(cell,"Info_a"); Hide(cell,"Cal_Ac");
 	if( Pane *highlight = cell->FindPane("Cal_Ac") ) highlight->SetAlpha(255);
@@ -150,8 +155,15 @@ bool MessageBoardLive::CalendarDateAt(float x, float y, const Vec2f &screen,
 	int dayOffset, int monthOffset, int &selectedOffset) const
 {
 	if( screen.x <= 0 || screen.y <= 0 ) return false;
-	const int n = BoardCalendarCell(x * 608 / screen.x - 304,
-		228 - y * 456 / screen.y);
+	Pane *frame = calendar ? calendar->FindPane("N_Cal_b1") : NULL;
+	if(!frame || !calendarPoseReady) return false;
+	Mtx inverse;
+	if(!guMtxInverse(frame->GetView(),inverse)) return false;
+	const bool pal50 = _CONF_GetVideo() == CONF_VIDEO_PAL && _CONF_GetEuRGB60() == 0;
+	guVector point = {BoardGeometry::MenuX(x,screen.x),
+		BoardGeometry::MenuY(y,screen.y,pal50),0}, local;
+	guVecMultiply(inverse,&point,&local);
+	const int n = BoardCalendarCell(local.x,local.y);
 	if( n < 0 ) return false;
 	tm first = BoardDay(dayOffset);
 	first.tm_mday = 1; first.tm_mon += monthOffset; first.tm_isdst = -1;
@@ -162,7 +174,7 @@ bool MessageBoardLive::CalendarDateAt(float x, float y, const Vec2f &screen,
 	return true;
 }
 void MessageBoardLive::DrawChrome(Mtx &view,
-	bool landing, bool arrows, u8 alpha)
+	bool landing, bool arrows, u8 alpha, bool widescreen)
 {
 	Hide(chrome,"N_BtnL_a0",!landing); Hide(chrome,"N_BtnL_a1",!landing);
 	Hide(chrome,"N_BtnR_a0",!landing); Hide(chrome,"N_BtnR_a1",!landing);
@@ -171,7 +183,7 @@ void MessageBoardLive::DrawChrome(Mtx &view,
 		char name[24]; snprintf(name,sizeof(name),"N_BtnL_a%d",n); Hide(chrome,name);
 	}
 	Hide(chrome,"N_ArwL",!arrows); Hide(chrome,"N_ArwR",!arrows);
-	chrome->RenderPane("RootPane",view,alpha);
+	chrome->RenderPane("RootPane",view,alpha,widescreen);
 	if( !landing )
 	{
 		// Isolated authored back button: no offscreen parent rotations or old
@@ -179,11 +191,11 @@ void MessageBoardLive::DrawChrome(Mtx &view,
 		Pose(chrome,"N_BtnL_a3_Cal",-210,-174);
 		Hide(chrome,"N_BtnL_a3_Cal",false);
 		Hide(chrome,"N_CalExitAc");
-		chrome->RenderPane("N_BtnL_a3_Cal",view,alpha);
+		chrome->RenderPane("N_BtnL_a3_Cal",view,alpha,widescreen);
 	}
 }
 void MessageBoardLive::DrawCalendar(Mtx &view, const Vec2f &canvas,
-	const tm &date, int monthOffset, u8 alpha)
+	const tm &date, int monthOffset, u8 alpha, bool widescreen)
 {
 	tm first = date;
 	first.tm_mday = 1; first.tm_mon += monthOffset; first.tm_isdst = -1;
@@ -200,9 +212,10 @@ void MessageBoardLive::DrawCalendar(Mtx &view, const Vec2f &canvas,
 		SetText(calendar,days[day],day == 6 ? 116 : 110 + day);
 		if( Textbox *label = calendar->FindTextbox(days[day]) ) label->SetUniformTextFit(true);
 	}
-	calendar->RenderPane("RootPane",view,alpha);
+	calendar->RenderPane("RootPane",view,alpha,widescreen);
 	Pane *frame = calendar->FindPane("N_Cal_b1");
 	if( !frame ) return;
+	calendarPoseReady = true;
 	for( int n = 0; n < 42; ++n )
 	{
 		tm current = first; current.tm_mday = 1 - monday + n; current.tm_isdst = -1;
@@ -219,8 +232,8 @@ void MessageBoardLive::DrawCalendar(Mtx &view, const Vec2f &canvas,
 		Mtx translation, centered; guMtxIdentity(translation);
 		guMtxTransApply(translation,translation,-210 + (n % 7) * 70,
 			137 - (n / 7) * 50,0);
-		// Cells must inherit the actual 5-degree frame pose, not a separate
-		// unrotated screen matrix. This also includes N_CalAll's translation.
+		// Reuse the straight frame's rendered matrix, including the native
+		// widescreen correction. Do not apply that correction a second time.
 		guMtxConcat(frame->GetView(),translation,centered);
 		cell->RenderPane("N_CalDay_p",centered,
 			current.tm_mon == first.tm_mon ? alpha : (u8)(alpha / 3));
@@ -231,7 +244,7 @@ void MessageBoardLive::DrawCalendar(Mtx &view, const Vec2f &canvas,
 	}
 }
 void MessageBoardLive::Draw(int page, int dayOffset, int monthOffset,
-	float x, float y, const Vec2f &screen, u8 alpha)
+	float x, float y, const Vec2f &screen, u8 alpha, bool widescreen)
 {
 	if( !loaded ) return;
 	const bool landing = page <= 2;
@@ -247,32 +260,35 @@ void MessageBoardLive::Draw(int page, int dayOffset, int monthOffset,
 	SetText(board,"T_Day_b",dateText);
 	if(Textbox *text = board->FindTextbox("T_Day_b")) text->SetUniformTextFit(true);
 	Mtx view; guMtxIdentity(view);
-	guMtxScaleApply(view,view,screen.x / 608.0f,-screen.y / 456.0f,1);
+	guMtxScaleApply(view,view,1,-1,1);
 	guMtxTransApply(view,view,x + screen.x * .5f,y + screen.y * .5f,0);
 	const Vec2f canvas = {608,456};
-	if( landing ) board->RenderPane("RootPane",view,alpha);
-	else backdrop->RenderPane("RootPane",view,alpha);
-	if( page == 3 ) DrawCalendar(view,canvas,date,monthOffset,alpha);
-	if( page == 4 ) compose->RenderPane("RootPane",view,alpha);
-	if( page == 5 ) memo->RenderPane("RootPane",view,alpha);
-	if( page == 6 ) address->RenderPane("RootPane",view,alpha);
+	if( landing ) board->RenderPane("RootPane",view,alpha,widescreen);
+	else backdrop->RenderPane("RootPane",view,alpha,widescreen);
+	if( page == 3 ) DrawCalendar(view,canvas,date,monthOffset,alpha,widescreen);
+	if( page == 4 ) compose->RenderPane("RootPane",view,alpha,widescreen);
+	if( page == 5 ) memo->RenderPane("RootPane",view,alpha,widescreen);
+	if( page == 6 ) address->RenderPane("RootPane",view,alpha,widescreen);
 	ThemeUi *skin = SystemMenuResources::Instance()->ThemeWidgets();
+	// Overlay controls use the same centered native units as the board, not
+	// a second independent stretch to the physical framebuffer dimensions.
+	const float controlX = x + screen.x * .5f - 320;
+	const float controlY = y + screen.y * .5f - 240;
 	if( page == 7 || page == 8 )
 	{
 		// Remain read-only. Match the existing two visible button hitboxes,
 		// without connecting to WC24 or changing the console's settings.
 		if( skin )
 		{
-			skin->DialogText(screen,x,y,alpha,Bmg::Instance()->GetMessage(382));
-			const float sx = screen.x / 640.0f, sy = screen.y / 480.0f;
-			skin->LabeledButton(x + 140*sx,y + 340*sy,160*sx,72*sy,alpha,Bmg::Instance()->GetMessage(79));
-			skin->LabeledButton(x + 340*sx,y + 340*sy,160*sx,72*sy,alpha,Bmg::Instance()->GetMessage(14));
+			skin->DialogText(canvas,x + (screen.x-canvas.x)*.5f,
+				y + (screen.y-canvas.y)*.5f,alpha,Bmg::Instance()->GetMessage(382));
+			skin->LabeledButton(controlX + 140,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(79));
+			skin->LabeledButton(controlX + 340,controlY + 340,160,72,alpha,Bmg::Instance()->GetMessage(14));
 		}
 		return;
 	}
-	DrawChrome(view,landing,landing || page == 3 || page == 6,alpha);
+	DrawChrome(view,landing,landing || page == 3 || page == 6,alpha,widescreen);
 	if( skin && (page == 5 || page == 6) )
-		skin->LabeledButton(x + screen.x * 455/640.0f,y + screen.y * 375/480.0f,
-			screen.x * 170/640.0f,screen.y * 72/480.0f,alpha,
+		skin->LabeledButton(controlX + 455,controlY + 375,170,72,alpha,
 			Bmg::Instance()->GetMessage(page == 5 ? 36 : 41));
 }
