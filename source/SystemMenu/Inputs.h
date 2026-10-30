@@ -26,7 +26,9 @@ private:
 	PageButtonRepeat pageRepeat;
 	int pageRepeatDirection;
 	bool pButton( u32 pad, u32 remote ) const
-		{ return ( pad_btns_d & pad ) || ( wpad.btns_d & remote )
+		{ // Reserve Up+B for screenshots rather than navigating Back mid-hold.
+			if((pad == PAD_BUTTON_B || pad == PAD_BUTTON_UP) && hUp() && hB()) return false;
+			return ( pad_btns_d & pad ) || ( wpad.btns_d & remote )
 			|| ( usb_mouse_btns_d & remote )
 			|| ( usb_keyboard_btns_d & remote ); }
 	bool hButton( u32 pad, u32 remote ) const

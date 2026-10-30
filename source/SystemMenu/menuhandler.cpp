@@ -337,7 +337,6 @@ void MenuHandler::BackmenuFinished()
 	state = St_ChannelGrid;
 }
 
-void PrintScreenshot();
 
 void MenuHandler::StartBannerSound()
 {
@@ -1446,8 +1445,6 @@ void MenuHandler::DoGrid()
 			}
 		}
 
-		if(!cameraOwnedInput && Pad(0).hPlus() && Pad(0).pMinus())
-			PrintScreenshot();
 
 		if( state == St_NativeChannel && primaryController >= 0
 			&& Pad( primaryController ).pB() )
@@ -2070,8 +2067,6 @@ void MenuHandler::DoHealthScreen()
 		}
 		if( state != St_HealthScreen ) break;
 
-		if(Pad(0).hPlus() && Pad(0).pMinus())
-			PrintScreenshot();
 
 		Recovery::SetCheckpoint( 0x130, "rendering Health and Safety screen" );
 		health->Render( GXmodelView2D, ScreenProps, widescreen );
@@ -2172,8 +2167,6 @@ void MenuHandler::DoSettingsSelect()
 		}
 		Recovery::SetCheckpoint( 0x150, "processing Wii settings actions" );
 
-		if(Pad(0).hPlus() && Pad(0).pMinus())
-			PrintScreenshot();
 
 		int homeController = -1;
 		int backController = -1;
@@ -2395,8 +2388,6 @@ void MenuHandler::DoHomeMenu()
 		if( closeCameraHome ) { HomeMenuCancel(); break; }
 		UpdateFreeCamera( ScreenProps, true );
 
-		if(Pad(0).hPlus() && Pad(0).pMinus())
-			PrintScreenshot();
 
 		Recovery::SetCheckpoint( 0x140, "rendering HOME Menu overlay" );
 		const bool cameraFrame = freeCamera.IsActive();
@@ -2547,8 +2538,6 @@ void MenuHandler::DoFatalError()
 		CInputs::Instance()->Update();
 		Recovery::SetCheckpoint( 0x160, "rendering WSM error dialog" );
 
-		if(Pad(0).hPlus() && Pad(0).pMinus())
-			PrintScreenshot();
 
 		for( int i = 0; i < 4; i++ )
 		{

@@ -35,8 +35,35 @@
 #include "utils/ImageWrite.h"
 #include "utils/TextureConverter.h"
 #include "recovery.h"
+#include "video.h"
 #include "SystemMenu/menuhandler.h"
 #include "SystemMenu/renderinspection.h"
+#include "SystemMenu/Inputs.h"
+#include "SystemMenu/screenshothold.h"
+#include "SystemMenu/appsettingsscreen.h"
+#include <ogc/lwp_watchdog.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+bool PrintScreenshot();
+
+static void UpdateScreenshots()
+{
+	static ScreenshotHold holds[4];
+	static u64 toastUntil = 0;
+	static bool saved = false;
+	const u64 now = ticks_to_millisecs(gettime());
+	bool capture = false;
+	for(int i=0;i<4;++i)
+		capture = holds[i].Update(Pad(i).hUp() && Pad(i).hB(),now) || capture;
+	if(capture) { saved = PrintScreenshot(); toastUntil = ticks_to_millisecs(gettime()) + 2500; }
+	if(now < toastUntil)
+	{
+		DrawSquare(40,36,screenwidth-80,42,(GXColor){0,0,0,220});
+		AppSettingsScreen::DrawInterfaceText(54,44,screenwidth-108,
+			saved ? "Screenshot taken" : "Screenshot failed",24,18,(GXColor){255,255,255,255});
+	}
+}
 
 #define DEFAULT_FIFO_SIZE 256 * 1024 * 3
 static unsigned int *xfb[2] = { NULL, NULL }; // Double buffered
@@ -286,6 +313,7 @@ void StopGX()
  ***************************************************************************/
 void Menu_Render( bool heartbeat )
 {
+	if(heartbeat) UpdateScreenshots();
 	whichfb ^= 1; // flip framebuffer
 	GX_CopyDisp(xfb[whichfb],GX_TRUE);
 	GX_DrawDone();
@@ -354,30 +382,34 @@ void ShowBootFramebuffer( const char *title, const char *status )
 /****************************************************************************
  * PrintScreenshot
  ***************************************************************************/
-void PrintScreenshot()
+bool PrintScreenshot()
 {
-	char path[200];
-	time_t t = time(0);
-	sprintf(path, "sd:/%i.png", (u32) t);
-
-	gprintf("\nTakeScreenshot(%s)", path);
-	int size = (2 * vmode->fbWidth * vmode->xfbHeight + 31) & ~31;
-
-	u8 * buffer = (u8 *) memalign(32, size);
-	if(!buffer)
-		return;
-
-	memcpy(buffer, xfb[whichfb], size);
-
-	gdImagePtr gdImg;
-	if(YCbYCrToGD(buffer, vmode->fbWidth, vmode->xfbHeight, &gdImg))
+	if(!vmode || !xfb[whichfb]) return false;
+	mkdir("sd:/screenshots",0777);
+	char path[160];
+	int fd = -1;
+	const unsigned long stamp = (unsigned long)time(NULL);
+	for(unsigned n=0;n<1000 && fd<0;++n)
 	{
-		WriteGDImage(path,gdImg, IMAGE_PNG, 0);
-		gdImageDestroy(gdImg);
+		snprintf(path,sizeof(path),"sd:/screenshots/WSM-%lu-%03u.jpg",stamp,n);
+		fd = open(path,O_WRONLY|O_CREAT|O_EXCL,0666);
 	}
-	free(buffer);
-
-	return;
+	if(fd<0) return false;
+	FILE *file = fdopen(fd,"wb");
+	if(!file) { close(fd); remove(path); return false; }
+	gdImagePtr image = NULL;
+	bool ok = false;
+	if(YCbYCrToGD((u8*)xfb[whichfb],vmode->fbWidth,vmode->xfbHeight,&image))
+	{
+		int bytes = 0;
+		void *jpeg = gdImageJpegPtr(image,&bytes,90);
+		if(jpeg && bytes>0) ok = fwrite(jpeg,1,bytes,file)==(size_t)bytes;
+		if(jpeg) gdFree(jpeg);
+		gdImageDestroy(image);
+	}
+	if(fclose(file)!=0) ok=false;
+	if(!ok) remove(path);
+	return ok;
 }
 
 /****************************************************************************
