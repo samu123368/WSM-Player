@@ -40,6 +40,8 @@
 #include "SystemMenu/renderinspection.h"
 #include "SystemMenu/Inputs.h"
 #include "SystemMenu/screenshothold.h"
+#include "SystemMenu/screenshotaspect.h"
+#include "utils/sc.h"
 #include "SystemMenu/appsettingsscreen.h"
 #include <ogc/lwp_watchdog.h>
 #include <sys/stat.h>
@@ -401,6 +403,17 @@ bool PrintScreenshot()
 	bool ok = false;
 	if(YCbYCrToGD((u8*)xfb[whichfb],vmode->fbWidth,vmode->xfbHeight,&image))
 	{
+		int width = 0, height = 0;
+		ScreenshotDimensions(vmode->xfbHeight,_CONF_GetAspectRatio() == CONF_ASPECT_16_9,width,height);
+		if(width != gdImageSX(image) || height != gdImageSY(image))
+		{
+			gdImagePtr corrected = gdImageCreateTrueColor(width,height);
+			if(!corrected) { gdImageDestroy(image); fclose(file); remove(path); return false; }
+			// Resample the entire framebuffer: correct display aspect, never crop.
+			gdImageCopyResampled(corrected,image,0,0,0,0,width,height,gdImageSX(image),gdImageSY(image));
+			gdImageDestroy(image);
+			image = corrected;
+		}
 		int bytes = 0;
 		void *jpeg = gdImageJpegPtr(image,&bytes,90);
 		if(jpeg && bytes>0) ok = fwrite(jpeg,1,bytes,file)==(size_t)bytes;

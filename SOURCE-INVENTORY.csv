@@ -138,6 +138,7 @@ source/SystemMenu/renderinspection.cpp,9747,2137fdc0de5f7f1c9e6ff43cba8d691c394a
 source/SystemMenu/renderinspection.h,2247,bd712ad6e88043ae4087e9d9677c2627dcad40d811294ee8544e952d3487757c,Manual provenance review; no recognized notice in file
 source/SystemMenu/savegrid.cpp,22300,0f70e7e860e4c874f4c131f1837424a3e95c5be969bcb5c86e65f120b36ff307,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/savegrid.h,4650,13b042bd80d6f396c4e37e20fdfb934e1aef283d241e25e99740dc7be5a6dc5c,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/screenshotaspect.h,415,7c6e4e7e533bb1e4098df7c6b2c24263e776f57b8cd167a2b45b2c534a19005c,Manual provenance review; no recognized notice in file
 source/SystemMenu/screenshothold.h,381,e5b856c50c6e59b9944660a8dcbadca245d628e1777ea12ea3ad1fd008be2e94,Manual provenance review; no recognized notice in file
 source/SystemMenu/settingsbg.cpp,1402,3cd68c93aaefdbf8ee8846abd032d7071ce5747e7b549addffc14d300b5395f5,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsbg.h,1317,6efd68593eca5e6749d96c758aaf777372e633c15100508d92aa61d7ca3bfa18,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -261,11 +262,11 @@ source/utils/updateformat.cpp,6200,6035b87bea205c538c929372b2da20ea021ef08690494
 source/utils/updateformat.h,821,11d1f89461d259f9e0d456fc7ce165eb3e546e8092a768e35380618af112d99a,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.cpp,1457,0811b89f0b747d9ddec81ddf8a75e23de63e77d95764f3c834a952470b916159,Manual provenance review; no recognized notice in file
 source/utils/updaterestart.h,385,6064f2342860f4dc7e641ee1a75567891ac56121f1b8552ef8840efcda7a48af,Manual provenance review; no recognized notice in file
-source/video.cpp,18298,735d56787d94b4babf16b5cae72b9e5e3ec342ee05cbbcff9f799a52e3d6f90e,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/video.cpp,18929,5c0637d24ee88db8c43813dca2b237f42201413f9ee8fbb4d75c949595a4254b,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,3f38259da5390da33315cf0a9f1f46b2f9f5073c18c0e69361fa9e6e2bd39d99,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,46f688e237a311f5afd6388b423382fcab7b014b086bd3b0da854be52dd2500e,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file
