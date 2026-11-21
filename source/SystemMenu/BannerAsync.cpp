@@ -32,6 +32,7 @@ distribution.
 #include "contentbin.h"
 #include "fileops.h"
 #include "nandtitle.h"
+#include "settings.h"
 #include "TextureConverter.h"
 
 extern const u8 original_homebrew_bin[];
@@ -746,7 +747,21 @@ bool BannerAsync::LoadContentBinBanner( BannerAsync *bann )
 
 bool BannerAsync::LoadHomebrewBanner( BannerAsync *bann )
 {
-	const bool ok = bann->Load( original_homebrew_bin, original_homebrew_bin_size );
+	// The original animated card can be supplied locally. Keep legacy artwork
+	// out of public source/binary packages; retain the existing HB renderer.
+	const std::string path=Settings::applicationPath + "homebrewBanner.bin";
+	struct stat info;
+	u8 *legacy=NULL;
+	u32 legacySize=0;
+	bool ok=false;
+	if(stat(path.c_str(),&info)==0 && info.st_size>=32 && info.st_size<=2*1024*1024
+		&& LoadFileToMem(path.c_str(),&legacy,&legacySize)>0)
+	{
+		ok=bann->Load(legacy,legacySize);
+		if(ok) { bann->buffer=legacy; bann->bufferSize=legacySize; legacy=NULL; }
+	}
+	if(!ok) ok=bann->Load(original_homebrew_bin,original_homebrew_bin_size);
+	free(legacy);
 	if( ok )
 	{
 		bann->LoadIcon();
