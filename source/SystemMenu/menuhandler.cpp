@@ -340,10 +340,12 @@ void MenuHandler::BackmenuFinished()
 
 void MenuHandler::StartBannerSound()
 {
+	StopBannerSound();
 	MenuAudio::Instance()->PauseMusic();
 	if( selectedBanner && selectedBanner->LoadSound() )
 	{
 		bannerSound = new GuiSound( selectedBanner->getSound(), selectedBanner->getSoundSize(), Settings::musicVolume );
+		if(!bannerSound->IsLoaded()) { DELETE(bannerSound); return; }
 		Settings::RegisterMusicSound( bannerSound );
 		bannerSound->Play();
 	}

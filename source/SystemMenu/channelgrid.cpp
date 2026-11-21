@@ -32,6 +32,7 @@ distribution.
 #include "sc.h"
 #include "utils/tools.h"
 #include "video.h"
+#include "appsettingsscreen.h"
 
 // array for which banners go on which icon panes
 static const s8 iconBindingIdx[ 42 ] =
@@ -912,6 +913,9 @@ void ChannelGrid::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 	}
 
 	RenderDragOverlay( ScreenProps );
+	if(IsHomebrewChannelPage(pageNo) && state != St_ShiftLeft && state != St_ShiftRight)
+		AppSettingsScreen::DrawInterfaceText(ScreenProps.x*.5f-100,8,200,
+			"Homebrew",20,18,(GXColor){45,115,160,255});
 
 }
 

@@ -3649,14 +3649,15 @@ void Banner::UnloadSound()
 
 bool Banner::LoadSound()
 {
+	UnloadSound();
 	if(!arc)
 		return false;
 
-	if(sound_bin)
-		free(sound_bin);
-
 	sound_bin = arc->GetFileAllocated("/meta/sound.bin", &sound_bin_size);
-	if(!sound_bin) {
+	if(!sound_bin || sound_bin_size < 12 ||
+		(memcmp(sound_bin,"RIFF",4) && memcmp(sound_bin,"BNS ",4) && memcmp(sound_bin,"FORM",4))) {
+		// Empty/header-only placeholders must never reach the raw PCM fallback.
+		UnloadSound();
 		return false;
 	}
 	return true;

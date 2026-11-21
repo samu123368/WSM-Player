@@ -110,6 +110,11 @@ namespace
 					return false;
 			return true;
 		}
+		if(key.compare(0,8,"hbempty:")==0 && key.size()<=12 && key.size()>8)
+		{
+			for(size_t i=8;i<key.size();++i) if(!std::isdigit((unsigned char)key[i])) return false;
+			return true;
+		}
 		if( key.compare( 0, 5, "path:" ) != 0 || key.size() <= 5 )
 			return false;
 		for( size_t i = 5; i < key.size(); ++i )
@@ -122,7 +127,7 @@ namespace
 
 	bool IsHomebrewOrderKey( const std::string &key )
 	{
-		return key.compare( 0, 14, "path:sd:/apps/" ) == 0;
+		return key.compare( 0, 14, "path:sd:/apps/" ) == 0 || key.compare(0,8,"hbempty:")==0;
 	}
 
 	bool AppendLoadedOrderKey( const std::string &key,
@@ -325,7 +330,7 @@ std::string BannerOrderKey( const BannerListEntry *entry )
 	if( entry->emptySlot )
 	{
 		char emptyKey[ 16 ];
-		snprintf( emptyKey, sizeof( emptyKey ), "empty:%04d",
+		snprintf( emptyKey, sizeof( emptyKey ), entry->homebrewArea ? "hbempty:%04d" : "empty:%04d",
 			std::max( 0, std::min( 9999, entry->systemMenuSlot ) ) );
 		return emptyKey;
 	}
@@ -368,6 +373,13 @@ void ApplySavedBannerOrder()
 	for( u32 i = 0; i < savedKeys.size(); ++i )
 	{
 		const std::string &key = savedKeys[ i ];
+		if(key.compare(0,8,"hbempty:")==0)
+		{
+			BannerListEntry *empty=new BannerListEntry(std::string());
+			empty->emptySlot=true; empty->homebrewArea=true;
+			empty->systemMenuSlot=atoi(key.c_str()+8); ordered<<empty;
+			continue;
+		}
 		if( key.compare( 0, 6, "empty:" ) == 0 )
 		{
 			const int systemSlot = atoi( key.c_str() + 6 );
@@ -544,6 +556,11 @@ bool SwapBannerListEntries( u32 first, u32 second )
 {
 	if( first >= bannerList.size() || second >= MaxChannelOrderEntries )
 		return false;
+	const bool homebrew=bannerList[first] && (bannerList[first]->hbXml || bannerList[first]->homebrewArea);
+	if(second<bannerList.size() && homebrew != (bannerList[second] && (bannerList[second]->hbXml || bannerList[second]->homebrewArea))) return false;
+	if(second>=bannerList.size() && !homebrew)
+		for(u32 i=0;i<bannerList.size();++i)
+			if(bannerList[i] && (bannerList[i]->hbXml || bannerList[i]->homebrewArea)) return false;
 	if( !bannerList[ first ]
 		|| ( second < bannerList.size() && !bannerList[ second ] ) )
 		return false;
@@ -564,6 +581,7 @@ bool SwapBannerListEntries( u32 first, u32 second )
 		BannerListEntry *empty = new BannerListEntry( std::string() );
 		empty->emptySlot = true;
 		empty->systemMenuSlot = nextEmptyIdentity++;
+		empty->homebrewArea=homebrew;
 		bannerList << empty;
 	}
 	if( first == second )
@@ -831,6 +849,55 @@ static void AddChannelsMovedToSD()
 	}
 }
 
+static bool PlaceHomebrewAfterChannels(const std::vector<std::string> &savedKeys)
+{
+	std::vector<std::string> before;
+	for(u32 i=0;i<bannerList.size();++i) before.push_back(BannerOrderKey(bannerList[i]));
+	List<BannerListEntry *> apps, remaining;
+	std::map<std::string,BannerListEntry*> available;
+	for(u32 i=0;i<bannerList.size();++i)
+		if(bannerList[i] && bannerList[i]->hbXml) { apps << bannerList[i]; available[BannerOrderKey(bannerList[i])]=bannerList[i]; }
+		else if(bannerList[i] && bannerList[i]->homebrewArea) delete bannerList[i];
+		else remaining << bannerList[i];
+	List<BannerListEntry*> orderedApps;
+	if(!apps.empty()) for(size_t i=0;i<savedKeys.size();++i)
+	{
+		const std::string &key=savedKeys[i];
+		if(key.compare(0,8,"hbempty:")==0)
+		{
+			BannerListEntry *empty=new BannerListEntry(std::string());
+			empty->emptySlot=empty->homebrewArea=true; empty->systemMenuSlot=atoi(key.c_str()+8);
+			orderedApps<<empty;
+		}
+		else if(available.count(key)) { orderedApps<<available[key]; available.erase(key); }
+	}
+	for(u32 i=0;i<apps.size();++i) if(available.count(BannerOrderKey(apps[i]))) orderedApps<<apps[i];
+	if(!orderedApps.empty())
+	{
+		// Keep the entire normal region (including its empty tiles), then start
+		// homebrew on a new page. Refreshing native slots never sorts this region.
+		const u32 normalSize=std::max(47u,((u32)remaining.size()+12)/12*12-1);
+		int identity=1000;
+		for(u32 i=0;i<remaining.size();++i) if(remaining[i] && remaining[i]->emptySlot) identity=std::max(identity,remaining[i]->systemMenuSlot+1);
+		while(remaining.size()<normalSize) { BannerListEntry *e=new BannerListEntry(std::string());e->emptySlot=true;e->systemMenuSlot=identity++;remaining<<e; }
+		int hbIdentity=0;
+		for(u32 i=0;i<orderedApps.size();++i) if(orderedApps[i]->emptySlot) hbIdentity=std::max(hbIdentity,orderedApps[i]->systemMenuSlot+1);
+		while(orderedApps.size()%12) { BannerListEntry *e=new BannerListEntry(std::string());e->emptySlot=e->homebrewArea=true;e->systemMenuSlot=hbIdentity++;orderedApps<<e; }
+	}
+	remaining.Append(orderedApps);
+	bool changed=remaining.size()!=before.size();
+	for(u32 i=0;!changed && i<remaining.size();++i) changed=BannerOrderKey(remaining[i])!=before[i];
+	bannerList.swap(remaining);
+	return changed;
+}
+
+bool IsHomebrewChannelPage(int page)
+{
+	const int first=std::max(0,page*12-1),last=std::min((int)bannerList.size(),page*12+11);
+	for(int i=first;i<last;++i) if(bannerList[i] && (bannerList[i]->hbXml || bannerList[i]->homebrewArea)) return true;
+	return false;
+}
+
 void BuildBannerList( u32 whichOnes )
 {
 	const bool appendSdBanners = ( whichOnes & DumpedSDBanners )
@@ -875,6 +942,8 @@ void BuildBannerList( u32 whichOnes )
 			&& !SaveBannerOrder() )
 			gprintf( "Channel order: could not save repaired System Menu slots\n" );
 	}
+	if(PlaceHomebrewAfterChannels(savedKeys) && !SaveBannerOrder())
+		gprintf("Channel order: could not save homebrew tail slots\n");
 }
 
 void FreeBannerList()

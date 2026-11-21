@@ -118,16 +118,17 @@ void SoundHandler::ClearDecoderList()
 
 SoundDecoder * SoundHandler::GetSoundDecoder(const u8 * sound, int length)
 {
+	if(!sound || length < 4) return NULL;
 	const u8 * check = sound;
 	int counter = 0;
 
-	while(check[0] == 0 && counter < length)
+	while(counter < length && check[0] == 0)
 	{
 		check++;
 		counter++;
 	}
 
-	if(counter >= length)
+	if(length - counter < 4)
 		return NULL;
 
 	u32 * magic = (u32 *) check;

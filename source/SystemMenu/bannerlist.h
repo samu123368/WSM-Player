@@ -37,6 +37,7 @@ public:
 	bool IsBound;
 	bool knownBad;
 	bool emptySlot;
+	bool homebrewArea;
 	// Files discovered in sd:/banners are movable preview-only additions.  The
 	// flag keeps a Wii Menu refresh from mistaking them for installed titles.
 	bool externalPreview;
@@ -55,6 +56,7 @@ public:
 		  IsBound( false ),
 		  knownBad( false ),
 		  emptySlot( false ),
+		  homebrewArea( false ),
 		  externalPreview( false ),
 		  systemMenuSlot( -1 ),
 		  tid( 0ull ),
@@ -76,6 +78,7 @@ extern List< BannerListEntry * >bannerList;
 // case-folded, slash-normalized path.
 std::string BannerOrderKey( const BannerListEntry *entry );
 void ApplySavedBannerOrder();
+bool IsHomebrewChannelPage(int page);
 bool SwapBannerListEntries( u32 first, u32 second );
 void RequestSystemMenuBannerRefresh();
 bool SystemMenuBannerRefreshPending();
