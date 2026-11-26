@@ -52,6 +52,18 @@ struct HomebrewIconCrop
 	}
 };
 
+struct HomebrewIconFit
+{
+	float width,height;
+	HomebrewIconFit(float sourceWidth,float sourceHeight) : width(0),height(0)
+	{
+		if(sourceWidth<=0 || sourceHeight<=0) return;
+		const float sx=118.f/sourceWidth,sy=88.f/sourceHeight;
+		const float scale=sx<sy?sx:sy;
+		width=sourceWidth*scale;height=sourceHeight*scale;
+	}
+};
+
 // Prefer retaining the normal pages beside the homebrew boundary. The same
 // bounded cache budget still applies; this does not pin an unlimited region.
 inline int HomebrewReturnCachePriority(int page, int current, int firstHomebrew)

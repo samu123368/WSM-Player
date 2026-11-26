@@ -26,6 +26,7 @@ distribution.
 #include <malloc.h>
 #include <string.h>
 #include "Texture.h"
+#include "utils/textureoutline.h"
 #include "video.h"
 
 namespace
@@ -241,6 +242,21 @@ void Texture::ApplyTransparentFallback(u8 map_id, u8 wrap_s, u8 wrap_t)
 	GXTexObj textureObject = TransparentTextureObject;
 	GX_InitTexObjWrapMode(&textureObject, wrap_s, wrap_t);
 	GX_LoadTexObj(&textureObject, map_id);
+}
+
+bool Texture::AddBlackLogoOutline()
+{
+	if(!loaded || GX_GetTexObjFmt(&texobj)!=GX_TF_RGB5A3) return false;
+	const u16 width=GetWidth(),height=GetHeight();
+	std::vector<u8> outlined;
+	if(!OutlineLogoRgb5a3((const u8*)GX_GetTexObjData(&texobj),width,height,outlined)) return false;
+	u8 *pixels=(u8*)memalign(32,outlined.size());
+	if(!pixels) return false;
+	memcpy(pixels,&outlined[0],outlined.size());
+	LoadFromRawData(pixels,width,height,GX_TF_RGBA8);
+	// LoadFromRawData borrows aligned inputs; adopt this allocation explicitly.
+	ownedTextureData=pixels;
+	return loaded;
 }
 
 void Texture::LoadFromRawData( u8 *data, u16 width, u16 height, u8 fmt )

@@ -41,6 +41,7 @@ public:
 
 	void Load(const u8 *texture);
 	void LoadFromRawData( u8 *data, u16 width, u16 height, u8 fmt );
+	bool AddBlackLogoOutline();
 	const std::string &getName() const { return name; }
 	void setName(const std::string& _name) { name = _name; }
 

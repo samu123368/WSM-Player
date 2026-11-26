@@ -35,7 +35,6 @@ distribution.
 #include "settings.h"
 #include "TextureConverter.h"
 #include "Picture.h"
-#include "localization.h"
 #include "homebrewpolish.h"
 #include "silentbannersound.h"
 #include "utils/localuiassets.h"
@@ -1018,9 +1017,9 @@ Object *BannerAsyncHB::LoadIcon()
 			if(!image) image=layout_icon->FindPane("WSM_Icon");
 			if(Picture *picture=dynamic_cast<Picture*>(image))
 			{
-				const HomebrewIconCrop crop(pngWidth,pngHeight);
-				picture->SetSize(128,96);
-				picture->SetTextureRect(crop.left,crop.top,crop.right,crop.bottom);
+				const HomebrewIconFit fit(pngWidth,pngHeight);
+				picture->SetSize(fit.width,fit.height);
+				picture->SetTextureRect(0,0,1,1);
 			}
 		}
 	}
@@ -1028,17 +1027,9 @@ Object *BannerAsyncHB::LoadIcon()
 	{
 		// Keep the original WSM blue tile; no stock generic artwork is needed.
 	}
-	// Keep the logo's authored transforms/alpha/animation, but replace its low
-	// resolution lettering with a centered, crisp native Wii-font label.
-	if(Pane *logo=layout_icon->FindPane("P_HBLogo"))
-	{
-		if(Textbox *label=layout_icon->AddLocalizedLabel(logo,
-			Localization::GetText("Homebrew"),112,32,18,(GXColor){255,255,255,255}))
-		{
-			logo->SetDrawSelf(false);
-			label->SetUniformTextFit(true);
-		}
-	}
+	// Use the real logo image and its original pane/animation, not typeset text.
+	if(Texture *logo=layout_icon->FindTexture("HBLogo.tpl"))
+		logo->AddBlackLogoOutline();
 	PrepareHomebrewVcSound();
 	__sync_synchronize();
 	iconReady = true;
