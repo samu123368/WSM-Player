@@ -33,7 +33,7 @@ class Texture
 {
 public:
 	Texture()
-		: header(NULL), palette(NULL), paletteData(NULL),
+		: header(NULL), palette(NULL), paletteData(NULL), cpuTextureData(NULL),
 		  ownedTextureData(NULL), ownedPaletteData(NULL), loaded(false) {}
 	virtual ~Texture();
 
@@ -95,6 +95,8 @@ protected:
 	Texture::Header *header;
 	TPL_Palette_Header *palette;
 	const u8 *paletteData;
+	// CPU virtual address, not the physical address packed into GXTexObj.
+	const u8 *cpuTextureData;
 	u8 *ownedTextureData;
 	u8 *ownedPaletteData;
 	std::string name;

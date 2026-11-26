@@ -173,8 +173,8 @@ source/SystemMenu/wsm_usbtrace.c,4854,449538e81532b049b2dd520412524224969eb464a2
 source/SystemMenu/wsm_usbtrace.h,316,d64ca3407b9688ecc31795a3d3fbc1646a1495b32d61dde9997ee75afd178df0,Manual provenance review; no recognized notice in file
 source/Textbox.cpp,15815,6805e3ab542ef1aec44e1f6e3e936fd3b81e2c546310e691dd97250bd3794546,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Textbox.h,4556,91472e11b7110a89f3901d8942ae37b0edca2b3b5644d7d84fd9499622c05bee,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/Texture.cpp,8616,14eb49b1ae83f5ec9575b7de5eead9375f8f049de849cca0907bd0f6ed5e4466,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/Texture.h,2815,424d17dcbcfaf9a16fa3e9bfd61205097ef4a600149f27aa37b0361fecfa4914,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/Texture.cpp,8694,9b36ad52a1045acfb3b94f41e626debf5923e13695109b8ae0034134ea949940,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/Texture.h,2936,171acd2afc59b22389fff65d5c7b8a8fc06133d1cfb2bbcc9e710ed9d728e290,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/WiiFont.cpp,12561,b5066587f704c30096997a57ec3f41c6f92dbd75c3890581b68513ee10aa38e1,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/WiiFont.h,5515,33f983d05df95821a50e563859785420ef32b5d8ea06c2d1be4711bf89706420,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Window.cpp,12355,f49b0287d5019e3ee139882c8141d6794189daeed4efba4ab7bc6b2817202d7b,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -269,7 +269,7 @@ source/video.cpp,18929,5c0637d24ee88db8c43813dca2b237f42201413f9ee8fbb4d75c94959
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,9587ccf804f84e9747964e0fd6f2eea8f506c3fbaed3fc03f71e67e13d16c39f,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,6f91e1748785e0b3a2c501a0d930b9df545504204c9314b87829102ed52c6a73,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

@@ -79,6 +79,7 @@ void Texture::ReleaseOwnedData()
 	ownedTextureData = NULL;
 	ownedPaletteData = NULL;
 	paletteData = NULL;
+	cpuTextureData = NULL;
 }
 
 void Texture::Load(const u8 *file )
@@ -139,6 +140,7 @@ void Texture::Load(const u8 *file )
 				return;
 			texture_data = ownedTextureData;
 		}
+		cpuTextureData = texture_data;
 		DCFlushRange(texture_data, textureBytes);
 
 		// seek to/read palette header
@@ -246,10 +248,10 @@ void Texture::ApplyTransparentFallback(u8 map_id, u8 wrap_s, u8 wrap_t)
 
 bool Texture::AddBlackLogoOutline()
 {
-	if(!loaded || GX_GetTexObjFmt(&texobj)!=GX_TF_RGB5A3) return false;
+	if(!loaded || !cpuTextureData || GX_GetTexObjFmt(&texobj)!=GX_TF_RGB5A3) return false;
 	const u16 width=GetWidth(),height=GetHeight();
 	std::vector<u8> outlined;
-	if(!OutlineLogoRgb5a3((const u8*)GX_GetTexObjData(&texobj),width,height,outlined)) return false;
+	if(!OutlineLogoRgb5a3(cpuTextureData,width,height,outlined)) return false;
 	u8 *pixels=(u8*)memalign(32,outlined.size());
 	if(!pixels) return false;
 	memcpy(pixels,&outlined[0],outlined.size());
@@ -283,6 +285,7 @@ void Texture::LoadFromRawData( u8 *data, u16 width, u16 height, u8 fmt )
 			return;
 		data = ownedTextureData;
 	}
+	cpuTextureData = data;
 	DCFlushRange(data, bytes);
 	loaded = true;
 	GX_InitTexObj( &texobj, data, width, height, fmt, 0, 0, false );
