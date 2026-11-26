@@ -9,7 +9,7 @@ LICENSES/libogc.txt,2550,386b57f32d87ed0c3a04ef54ad8a43c8b307d6a72ce5339fdce1c29
 Makefile,8325,1d85a02695d51a0de0d1b7bb43adcdc642b51621afacf3caba95e8b02e21e5d5,Manual provenance review; no recognized notice in file
 source/Animator.cpp,7913,309a005e49d0f7b05190a1851ac3130bbad86b07443cad813b53348d50bb903e,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Animator.h,3997,cefb95803ee4f871af6a62fc81dced2d8aa05e95cfe14cbdc1f50880e18a8db5,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/Banner.cpp,135610,bdb58d7e07da35266f52ca7fe14fe23ede3eb9f4a7b40d0461258ada3cbc6edf,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/Banner.cpp,135747,e83945f957fb8791c3c82d2696388997a29bc382e8abcc869aa7a7281dfa1c3c,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Banner.h,6416,c4693402cdda3c0577878404b9edd71249371d15ead5c0538ad00e6f64a9308e,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Layout.cpp,23239,1e04767e0d6e26afebf76148124054af8c7928097281bae3316f242e658ab492,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/Layout.h,5737,1b547b6e83ee08f6ef8147f1c7934435638979b17d6cc3a081fe87ce32917141,Permissive renderer/TinyXML-style notice; origins still reviewed
@@ -146,6 +146,7 @@ source/SystemMenu/settingsbtn.cpp,4030,3fa7de75ded195eb18a3f41ff85207db175bbe814
 source/SystemMenu/settingsbtn.h,1750,e7350f896a1bbc712cc7d86105d1209b29cf4ec013af8366a1a7e67891ef5097,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsselect.cpp,27559,3013338258dbac57a589c98257a99bdff16b41741c527b7d2380ae07b09c06a9,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/settingsselect.h,4749,23a0f6ecb6352f4d5deee0c78d43ff345ec5ac3dcf94982c6beef9572e23c6fc,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/silentbannersound.h,755,e2e4bcffd88684c192b8bea2f276d7631b48afe3ee9c35fc6798127777c79b0c,Manual provenance review; no recognized notice in file
 source/SystemMenu/systemmenuresource.cpp,2847,f0ed7a6083d6a29cfa4f435f1c6ba43374c9fab07fbcef548ba9e761b4e1e050,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/systemmenuresource.h,2346,141711a06a23aff554805e22ade6f213158dea6d1615b1432670c871b2e37b7a,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/themeui.cpp,11892,94f3bc468b20076c705c4138618367e65e1b7af9adbcc5a3f315be52115a5725,Manual provenance review; no recognized notice in file
@@ -266,7 +267,7 @@ source/video.cpp,18929,5c0637d24ee88db8c43813dca2b237f42201413f9ee8fbb4d75c94959
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,8fcd893979e1dea51a4b83e62ebbf63eb888147a00637cc4e41c765c69ca4f7d,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,44d3b0b46741a86013a70ccf096fa2aaeb218684ce5043a72f251105b2e123bc,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

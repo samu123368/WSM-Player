@@ -32,6 +32,7 @@ distribution.
 #include "SystemMenu/SystemFont.h"
 #include "SystemMenu/localization.h"
 #include "SystemMenu/miiprofiles.h"
+#include "SystemMenu/silentbannersound.h"
 #include "Banner.h"
 #include "channelpreviewconfig.h"
 #include "Picture.h"
@@ -3657,6 +3658,11 @@ bool Banner::LoadSound()
 	if(!sound_bin || sound_bin_size < 12 ||
 		(memcmp(sound_bin,"RIFF",4) && memcmp(sound_bin,"BNS ",4) && memcmp(sound_bin,"FORM",4))) {
 		// Empty/header-only placeholders must never reach the raw PCM fallback.
+		UnloadSound();
+		return false;
+	}
+	if(IsKnownSilentBannerSound(sound_bin,sound_bin_size))
+	{
 		UnloadSound();
 		return false;
 	}
