@@ -34,12 +34,64 @@ distribution.
 #include "nandtitle.h"
 #include "settings.h"
 #include "TextureConverter.h"
+#include "Picture.h"
+#include "localization.h"
+#include "homebrewpolish.h"
+#include "silentbannersound.h"
+#include "utils/localuiassets.h"
 
 extern const u8 original_homebrew_bin[];
 extern const u32 original_homebrew_bin_size;
 
 namespace
 {
+	// Loaded once by the icon worker, before publishing a homebrew icon. Banner
+	// opening never scans NAND or reads SD. Nintendo audio stays local, not in
+	// the public application/package. No VC resource means silence, not raw PCM.
+	std::vector<u8> homebrewVcSound;
+	void PrepareHomebrewVcSound()
+	{
+		static bool attempted=false;
+		if(attempted) return;
+		attempted=true;
+		auto retain=[](const u8 *data,u32 size) {
+			if(data && size>32 && !memcmp(data,"IMD5",4)) { data+=32;size-=32; }
+			if(!data || size<12 || size>512*1024) return false;
+			std::vector<u8> decoded;
+			if(!memcmp(data,"LZ77",4))
+			{
+				if(!DecodeHomebrewLz10(data,size,decoded)) return false;
+				data=&decoded[0];size=decoded.size();
+			}
+			const bool valid=data && size>=12 && size<=512*1024
+				&& (!memcmp(data,"BNS ",4) || !memcmp(data,"RIFF",4) || !memcmp(data,"FORM",4))
+				&& !IsKnownSilentBannerSound(data,size);
+			if(valid) homebrewVcSound.assign(data,data+size);
+			return valid;
+		};
+		const std::string path=Settings::applicationPath+"homebrewSound.bin";
+		struct stat info;
+		u8 *data=NULL;u32 size=0;
+		if(stat(path.c_str(),&info)==0 && info.st_size>=12 && info.st_size<=512*1024
+			&& LoadFileToMem(path.c_str(),&data,&size)>0)
+		{
+			const bool ok=retain(data,size);free(data);data=NULL;
+			if(ok) return;
+		}
+		// NES Virtual Console titles share the familiar opening chime. Enumerate
+		// our own title-list snapshot, never NandTitles' shared iteration state.
+		NandTitle titles;
+		if(titles.Get()<0) return;
+		for(u32 i=0;i<titles.Count();++i)
+		{
+			const u64 title=titles.At(i);
+			if(TITLE_UPPER(title)!=DOWNLOADED_CHANNELS || (TITLE_LOWER(title)>>24)!='F') continue;
+			data=LocalUiAssets::TitleFile(title,"/meta/sound.bin",&size);
+			const bool ok=retain(data,size);free(data);
+			if(ok) return;
+		}
+	}
+
 	const u32 MaxLooseBannerBytes = 64 * 1024 * 1024;
 	const u32 MaxWadBannerBytes = 32 * 1024 * 1024;
 	const u32 MaxWadMetadataBytes = 1024 * 1024;
@@ -789,6 +841,18 @@ BannerAsyncHB::~BannerAsyncHB()
 	free( rawTexData );
 }
 
+bool BannerAsyncHB::LoadSound()
+{
+	UnloadSound();
+	if(homebrewVcSound.empty()) return false;
+	sound_bin=(u8*)memalign(32,(homebrewVcSound.size()+31)&~31);
+	if(!sound_bin) return false;
+	sound_bin_size=homebrewVcSound.size();
+	memcpy(sound_bin,&homebrewVcSound[0],sound_bin_size);
+	DCFlushRange(sound_bin,sound_bin_size);
+	return true;
+}
+
 Object *BannerAsyncHB::LoadBanner()
 {
 	if( !arc || !xml )
@@ -950,14 +1014,32 @@ Object *BannerAsyncHB::LoadIcon()
 		if( ( tex = layout_icon->FindTexture( "Iconpng.tpl" ) ) )
 		{
 			tex->LoadFromRawData( rawTexData, pngWidth, pngHeight, GX_TF_RGBA8 );
+			Pane *image=layout_icon->FindPane("P_Iconpng");
+			if(!image) image=layout_icon->FindPane("WSM_Icon");
+			if(Picture *picture=dynamic_cast<Picture*>(image))
+			{
+				const HomebrewIconCrop crop(pngWidth,pngHeight);
+				picture->SetSize(128,96);
+				picture->SetTextureRect(crop.left,crop.top,crop.right,crop.bottom);
+			}
 		}
 	}
 	else
 	{
 		// Keep the original WSM blue tile; no stock generic artwork is needed.
 	}
-
-
+	// Keep the logo's authored transforms/alpha/animation, but replace its low
+	// resolution lettering with a centered, crisp native Wii-font label.
+	if(Pane *logo=layout_icon->FindPane("P_HBLogo"))
+	{
+		if(Textbox *label=layout_icon->AddLocalizedLabel(logo,
+			Localization::GetText("Homebrew"),112,32,18,(GXColor){255,255,255,255}))
+		{
+			logo->SetDrawSelf(false);
+			label->SetUniformTextFit(true);
+		}
+	}
+	PrepareHomebrewVcSound();
 	__sync_synchronize();
 	iconReady = true;
 	return iconObj;

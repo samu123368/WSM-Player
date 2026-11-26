@@ -32,7 +32,7 @@ distribution.
 #include "sc.h"
 #include "utils/tools.h"
 #include "video.h"
-#include "appsettingsscreen.h"
+#include "homebrewpolish.h"
 
 // array for which banners go on which icon panes
 static const s8 iconBindingIdx[ 42 ] =
@@ -265,13 +265,17 @@ void ChannelGrid::PrioritizePage( int page )
 void ChannelGrid::TrimIconCache()
 {
 	std::vector<std::pair<int, int> > candidates;
+	int firstHomebrew=-1;
+	for(int page=0;page<pageCnt;++page)
+		if(IsHomebrewChannelPage(page)) { firstHomebrew=page;break; }
 	for( int i = 0; i < (int)bannerList.size(); ++i )
 	{
 		BannerListEntry *entry = bannerList[i];
 		if( !entry || !entry->banner || i == pinnedChannelIndex
 			|| (dragController >= 0 && i == dragSourceIndex)
 			|| ChannelNeededForPage(i, pageNo) ) continue;
-		candidates.push_back(std::make_pair(abs((i + 1) / 12 - pageNo), i));
+		candidates.push_back(std::make_pair(HomebrewReturnCachePriority(
+			(i+1)/12,pageNo,firstHomebrew),i));
 	}
 	std::sort(candidates.begin(), candidates.end());
 	const u32 budget = 8 * 1024 * 1024;
@@ -913,9 +917,6 @@ void ChannelGrid::Render( Mtx &modelview, const Vec2f &ScreenProps, bool widescr
 	}
 
 	RenderDragOverlay( ScreenProps );
-	if(IsHomebrewChannelPage(pageNo) && state != St_ShiftLeft && state != St_ShiftRight)
-		AppSettingsScreen::DrawInterfaceText(ScreenProps.x*.5f-100,8,200,
-			"Homebrew",20,18,(GXColor){45,115,160,255});
 
 }
 

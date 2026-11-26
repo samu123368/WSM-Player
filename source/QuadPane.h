@@ -47,6 +47,7 @@ public:
 	// material. Nintendo's Forecast banner uses this for every temperature,
 	// date and precipitation digit.
 	bool SetTextureAtlasColumn( u32 column, u32 columnCount );
+	bool SetTextureRect(float left, float top, float right, float bottom);
 	// Tint all four vertices together. Custom Photo Channel previews use the
 	// authored cork pane as an opaque black backing without allocating another
 	// full-screen texture on the Wii.

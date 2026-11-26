@@ -53,7 +53,7 @@ public:
 	// Advance a grid icon, then restore generated News/Forecast panes which the
 	// native BRLAN may have hidden or moved on that frame.
 	void AdvanceIcon();
-	bool LoadSound();
+	virtual bool LoadSound();
 
 	// delete the banner and icon in case you wanna save memory or something stupid like that
 	void UnloadBanner();

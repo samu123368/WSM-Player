@@ -102,6 +102,7 @@ public:
 
 	Object *LoadBanner();
 	Object *LoadIcon();
+	bool LoadSound();
 
 protected:
 	HomebrewXML *xml;// not allocated or deleted in this class, just a pointer

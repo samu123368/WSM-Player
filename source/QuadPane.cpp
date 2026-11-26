@@ -50,6 +50,20 @@ bool QuadPane::SetTextureAtlasColumn( u32 column, u32 columnCount )
 	return true;
 }
 
+bool QuadPane::SetTextureRect(float left, float top, float right, float bottom)
+{
+	if(!header || !tex_coords || !header->tex_coord_count
+		|| !(left >= 0 && top >= 0 && right <= 1 && bottom <= 1)
+		|| left >= right || top >= bottom) return false;
+	TexCoords *coords=const_cast<TexCoords*>(tex_coords);
+	for(u32 i=0;i<header->tex_coord_count;++i)
+	{
+		coords[i].coords[0]={left,top}; coords[i].coords[1]={right,top};
+		coords[i].coords[2]={left,bottom}; coords[i].coords[3]={right,bottom};
+	}
+	return true;
+}
+
 inline void QuadPane::SetVertex(int ind, float x, float y, u8 render_alpha) const
 {
 	// position
