@@ -48,7 +48,7 @@ source/SoundOperations/audio.cpp,907,707fe880188df6002626a047f10644d014439be14a1
 source/SoundOperations/audio.h,311,c12bd22639fe56236d6838af0d434cbe7c6218e14b5bc6fd6413b51a47cce168,Manual provenance review; no recognized notice in file
 source/SoundOperations/gui_sound.cpp,5865,ab969684f336363e5f0fcc7763ce8d4087fa4aa6baf2be3794cbdc877059d5f6,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SoundOperations/gui_sound.h,2727,9d81dc92c62d7f71b285fd7b66205bd26a56432574162e354012b134cfba9db2,Permissive renderer/TinyXML-style notice; origins still reviewed
-source/SystemMenu/BannerAsync.cpp,29239,1a09dd388e96a69309436e15db7a2bd9fda7b5f6adf66ef1171ac22837eac20a,Permissive renderer/TinyXML-style notice; origins still reviewed
+source/SystemMenu/BannerAsync.cpp,29560,60ac76c8c663716614e3f92a864e3be67634149b674e37c3ef4c1c8913b933c1,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/BannerAsync.h,3537,d6f4f3518bc54ee6673986d62b42fdd021168f2d26ddd9bc36fd2ab3c9c17d0c,Permissive renderer/TinyXML-style notice; origins still reviewed
 source/SystemMenu/Inputs.cpp,17577,affcdf3cb8382f9d1b8d99947cfbcd2c4874b39aaa7884fe1cf334cc69bedddb,Manual provenance review; no recognized notice in file
 source/SystemMenu/Inputs.h,6054,df021e226325975cdfdd4573f642bc811958bfa1af1ca7e9639c842e0b88c631,Manual provenance review; no recognized notice in file
@@ -269,7 +269,7 @@ source/video.cpp,18929,5c0637d24ee88db8c43813dca2b237f42201413f9ee8fbb4d75c94959
 source/video.h,1063,751cab27009b41529d4e51fdade2e4ca3997af55cec88984d903fe2daca491e0,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.c,3017,09d6a818370a8a6b8c33daaa1658daef988483b678d26597ddb98378444d8e84,Manual provenance review; no recognized notice in file
 source/wsm_stmhook.h,590,70ab44646edde4d089e676b8d32d03afb02fb0c0ca669c6114241202b76afd0c,Manual provenance review; no recognized notice in file
-source/wsmversion.h,370,6f91e1748785e0b3a2c501a0d930b9df545504204c9314b87829102ed52c6a73,Manual provenance review; no recognized notice in file
+source/wsmversion.h,370,9c0260ca9a06f01cdbeff89f1fcab60f52be92be2ff8691c1bb461e5fad0f071,Manual provenance review; no recognized notice in file
 README.md,4773,94df5fbb0bcc6fbb9cb4f63595a3c5cb2d13111e905ff1a5a48ffccf4184b1d8,GPL-v2 notice; combined-distribution review required
 REVIEW.md,2721,136a8418e66a251395d02f054300095a8f10953e8e8a1ddef3271390b6705cdf,Manual provenance review; no recognized notice in file
 .gitignore,216,059d8cb0653d2d7f674a8f0ce9cedfb63dcb3093dbbecd3486b22680cc8a7ebe,Manual provenance review; no recognized notice in file

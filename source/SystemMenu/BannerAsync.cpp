@@ -908,6 +908,11 @@ Object *BannerAsyncHB::LoadBanner()
 	}
 
 	// now patch in text from the xml
+	// Correct the original card's platform label without replacing its font,
+	// material, pane geometry or animation. Textbox retains this stable string.
+	static const char16 homebrewLabel[]={'H','o','m','e','b','r','e','w',0};
+	if(Textbox *platform=layout_banner->FindTextbox("T_PF"))
+		platform->SetText(homebrewLabel);
 	SetText( layout_banner, "T_coder", "T_Coded_by", "Line", xml->GetCoder() );
 	SetText( layout_banner, "T_release_date", "T_Released", "Line1", xml->GetReleasedate() );
 	SetText( layout_banner, "T_version", "T_versiontext", "Line2", xml->GetVersion() );
